@@ -1,11 +1,16 @@
-import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { CheckCircle2, Award, Zap, TrendingUp } from 'lucide-react';
-import { toast } from 'sonner';
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { CheckCircle2, Award, Zap, TrendingUp } from "lucide-react";
+import { toast } from "sonner";
+import { QuizAnswers, ProfileCategory } from "@/domain/quiz/types";
+import {
+  getRecommendationsForProfile,
+  getAnswerLabel,
+} from "@/domain/quiz/data";
 
 interface QuizResultsProps {
-  answers: Record<string, any>;
+  answers: QuizAnswers;
   score: number;
   category: {
     label: string;
@@ -15,7 +20,11 @@ interface QuizResultsProps {
   };
 }
 
-export default function QuizResults({ answers, score, category }: QuizResultsProps) {
+export default function QuizResults({
+  answers,
+  score,
+  category,
+}: QuizResultsProps) {
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -32,57 +41,31 @@ export default function QuizResults({ answers, score, category }: QuizResultsPro
     visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
   };
 
-  const handleSendResults = () => {
-    // Aqui você pode enviar os dados para um backend
-    console.log('Quiz responses:', { ...answers, score, category: category.label });
-    toast.success('Seus resultados foram registrados!');
+  const handleNextSteps = () => {
+    toast.success("Redirecionando para os próximos passos...");
+    // Aqui poderá implementar um window.location.href para a Masterclass ou grupo VIP
   };
 
   const handleRestart = () => {
     window.location.reload();
   };
 
-  // Determinar ícone baseado na categoria
   const getCategoryIcon = () => {
-    switch (category.label) {
-      case 'Especialista em Cargo CLT':
+    switch (category.label as ProfileCategory) {
+      case "Especialista em Cargo CLT":
         return <Award className="w-16 h-16" />;
-      case 'Especialista em Transição':
+      case "Especialista em Transição":
         return <TrendingUp className="w-16 h-16" />;
-      case 'Consultor Iniciante':
+      case "Consultor Iniciante":
         return <Zap className="w-16 h-16" />;
       default:
         return <CheckCircle2 className="w-16 h-16" />;
     }
   };
 
-  const getRecommendations = () => {
-    if (score <= 30) {
-      return [
-        'Comece a documentar sua experiência e expertise',
-        'Identifique seu primeiro nicho de mercado',
-        'Crie um plano de transição de 6-12 meses',
-      ];
-    } else if (score <= 50) {
-      return [
-        'Defina sua proposta de valor com clareza',
-        'Estruture seu primeiro projeto piloto',
-        'Crie um processo de prospecção ativo',
-      ];
-    } else if (score <= 70) {
-      return [
-        'Implemente um sistema de gestão de clientes',
-        'Crie processos repetíveis e escaláveis',
-        'Desenvolva autoridade no seu nicho',
-      ];
-    } else {
-      return [
-        'Otimize sua precificação e margem',
-        'Crie ofertas premium e recorrentes',
-        'Estruture um modelo de negócio previsível',
-      ];
-    }
-  };
+  const recommendations = getRecommendationsForProfile(
+    category.label as ProfileCategory
+  );
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -109,18 +92,22 @@ export default function QuizResults({ answers, score, category }: QuizResultsPro
                 <span className="text-3xl text-muted-foreground">/100</span>
               </h2>
 
-              <p className="text-muted-foreground mb-2">Seu Score de Consultoria</p>
+              <p className="text-muted-foreground mb-2">
+                Seu Score de Consultoria
+              </p>
             </div>
           </motion.div>
 
           {/* Category Card */}
           <motion.div variants={itemVariants} className="mb-8">
-            <Card className={`border-2 border-primary bg-gradient-to-br ${category.color} bg-opacity-10 backdrop-blur-sm p-8 md:p-12 neo-card shadow-lg`}>
+            <Card
+              className={`border-2 border-primary bg-gradient-to-br ${category.color} bg-opacity-10 backdrop-blur-sm p-8 md:p-12 neo-card shadow-lg`}
+            >
               <div className="text-center">
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  transition={{ delay: 0.3, type: 'spring' }}
+                  transition={{ delay: 0.3, type: "spring" }}
                   className="text-6xl mb-4"
                 >
                   {category.icon}
@@ -142,58 +129,43 @@ export default function QuizResults({ answers, score, category }: QuizResultsPro
             <h4 className="neo-heading text-2xl mb-4">Análise Detalhada</h4>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Experience */}
               <Card className="border-2 border-border bg-card/50 p-4 neo-card">
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-2 h-2 rounded-full bg-primary" />
                   <span className="font-semibold">Experiência</span>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  {answers.experience === 'less-10' && 'Menos de 10 anos'}
-                  {answers.experience === '10-15' && 'Entre 10 e 15 anos'}
-                  {answers.experience === '15-20' && 'Entre 15 e 20 anos'}
-                  {answers.experience === 'more-20' && 'Mais de 20 anos'}
+                  {getAnswerLabel("experience", answers.experience)}
                 </p>
               </Card>
 
-              {/* Moment */}
               <Card className="border-2 border-border bg-card/50 p-4 neo-card">
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-2 h-2 rounded-full bg-secondary" />
                   <span className="font-semibold">Momento Atual</span>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  {answers.moment === 'considering' && 'Considerando transição'}
-                  {answers.moment === 'transitioning' && 'Em transição'}
-                  {answers.moment === 'started' && 'Já iniciou'}
-                  {answers.moment === 'established' && 'Já estruturado'}
+                  {getAnswerLabel("moment", answers.moment)}
                 </p>
               </Card>
 
-              {/* Clarity */}
               <Card className="border-2 border-border bg-card/50 p-4 neo-card">
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-2 h-2 rounded-full bg-accent" />
                   <span className="font-semibold">Clareza de Oferta</span>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  {answers.clarity === 'clear' && 'Totalmente claro'}
-                  {answers.clarity === 'partial' && 'Parcialmente claro'}
-                  {answers.clarity === 'unclear' && 'Ainda não definido'}
+                  {getAnswerLabel("clarity", answers.clarity)}
                 </p>
               </Card>
 
-              {/* Clients */}
               <Card className="border-2 border-border bg-card/50 p-4 neo-card">
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-2 h-2 rounded-full bg-primary" />
                   <span className="font-semibold">Carteira de Clientes</span>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  {answers.clients === 'none' && 'Nenhum ainda'}
-                  {answers.clients === 'pontual' && 'Projetos pontuais'}
-                  {answers.clients === 'irregular' && 'Irregular'}
-                  {answers.clients === 'stable' && 'Estável'}
+                  {getAnswerLabel("clients", answers.clients)}
                 </p>
               </Card>
             </div>
@@ -201,10 +173,12 @@ export default function QuizResults({ answers, score, category }: QuizResultsPro
 
           {/* Recommendations */}
           <motion.div variants={itemVariants} className="mb-8">
-            <h4 className="neo-heading text-2xl mb-4">Próximos Passos Recomendados</h4>
+            <h4 className="neo-heading text-2xl mb-4">
+              Próximos Passos Recomendados
+            </h4>
 
             <div className="space-y-3">
-              {getRecommendations().map((rec, index) => (
+              {recommendations.map((rec, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, x: -20 }}
@@ -222,22 +196,26 @@ export default function QuizResults({ answers, score, category }: QuizResultsPro
           </motion.div>
 
           {/* Call to Action */}
-          <motion.div variants={itemVariants} className="bg-primary/10 border border-primary/30 rounded-lg p-6 mb-8">
-            <p className="text-sm text-muted-foreground mb-4">
-              ✓ Seus resultados foram salvos com sucesso! Você receberá em breve um email com:
+          <motion.div
+            variants={itemVariants}
+            className="bg-primary/10 border border-primary/30 rounded-lg p-6 mb-8"
+          >
+            <p className="text-sm font-bold text-primary mb-4">
+              ✓ Os seus resultados foram guardados com sucesso! Verifique a sua
+              caixa de entrada para aceder a:
             </p>
-            <ul className="space-y-2 text-sm">
+            <ul className="space-y-2 text-sm text-muted-foreground">
               <li className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-primary" />
-                <span>Análise detalhada do seu perfil</span>
+                <span>Análise detalhada do seu perfil profissional</span>
               </li>
               <li className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-secondary" />
-                <span>Recomendações personalizadas</span>
+                <span>Roadmap de transição personalizado</span>
               </li>
               <li className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-accent" />
-                <span>Acesso antecipado à masterclass</span>
+                <span>Acesso exclusivo à próxima Masterclass</span>
               </li>
             </ul>
           </motion.div>
@@ -250,29 +228,16 @@ export default function QuizResults({ answers, score, category }: QuizResultsPro
             <Button
               onClick={handleRestart}
               variant="outline"
-              className="border-2 border-border hover:bg-card/50"
+              className="border-2 border-border hover:bg-card/50 px-8"
             >
               Fazer Novo Diagnóstico
             </Button>
             <Button
-              onClick={handleSendResults}
-              className="bg-primary text-primary-foreground hover:bg-primary/90 border-2 border-primary font-bold"
+              onClick={handleNextSteps}
+              className="bg-primary text-primary-foreground hover:bg-primary/90 border-2 border-primary font-bold px-8"
             >
-              Confirmar e Receber Resultados
+              Aceder aos Próximos Passos
             </Button>
-          </motion.div>
-
-          {/* Footer */}
-          <motion.div
-            variants={itemVariants}
-            className="mt-12 text-center text-sm text-muted-foreground"
-          >
-            <p>
-              Dúvidas? Entre em contato conosco em 
-              <a href="mailto:contato@mape.com.br" className="text-primary hover:underline ml-1">
-                contato@mape.com.br
-              </a>
-            </p>
           </motion.div>
         </motion.div>
       </div>

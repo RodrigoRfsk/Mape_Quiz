@@ -1,29 +1,15 @@
-import { motion } from 'framer-motion';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
-
-interface QuestionOption {
-  value: string;
-  label: string;
-}
-
-interface Question {
-  id: string;
-  type: 'text' | 'textarea' | 'radio' | 'checkbox';
-  question: string;
-  placeholder?: string;
-  options?: QuestionOption[];
-  optional?: boolean;
-  subtext?: string;
-}
+import { motion } from "framer-motion";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { Question } from "@/domain/quiz/data";
 
 interface QuizQuestionProps {
   question: Question;
-  answer: any;
-  onAnswer: (value: any) => void;
+  answer: string | string[];
+  onAnswer: (value: string | string[]) => void;
   maxCheckboxes?: number;
 }
 
@@ -49,7 +35,7 @@ export default function QuizQuestion({
     visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
   };
 
-  if (question.type === 'text') {
+  if (question.type === "text") {
     return (
       <motion.div
         initial={{ opacity: 0, y: 10 }}
@@ -58,15 +44,15 @@ export default function QuizQuestion({
       >
         <Input
           placeholder={question.placeholder}
-          value={answer || ''}
-          onChange={(e) => onAnswer(e.target.value)}
+          value={(answer as string) || ""}
+          onChange={e => onAnswer(e.target.value)}
           className="text-base py-3 px-4 border-2 border-border bg-background text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary"
         />
       </motion.div>
     );
   }
 
-  if (question.type === 'textarea') {
+  if (question.type === "textarea") {
     return (
       <motion.div
         initial={{ opacity: 0, y: 10 }}
@@ -75,24 +61,24 @@ export default function QuizQuestion({
       >
         <Textarea
           placeholder={question.placeholder}
-          value={answer || ''}
-          onChange={(e) => onAnswer(e.target.value)}
+          value={(answer as string) || ""}
+          onChange={e => onAnswer(e.target.value)}
           className="text-base py-3 px-4 border-2 border-border bg-background text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary min-h-24"
         />
       </motion.div>
     );
   }
 
-  if (question.type === 'radio') {
+  if (question.type === "radio") {
     return (
       <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
-        <RadioGroup value={answer || ''} onValueChange={onAnswer}>
+        <RadioGroup value={(answer as string) || ""} onValueChange={onAnswer}>
           <motion.div className="space-y-3">
-            {question.options?.map((option, index) => (
+            {question.options?.map(option => (
               <motion.div
                 key={option.value}
                 variants={itemVariants}
@@ -117,7 +103,7 @@ export default function QuizQuestion({
     );
   }
 
-  if (question.type === 'checkbox') {
+  if (question.type === "checkbox") {
     const selectedCount = Array.isArray(answer) ? answer.length : 0;
     const isMaxed = selectedCount >= maxCheckboxes;
 
@@ -129,7 +115,7 @@ export default function QuizQuestion({
           newAnswer.push(value);
         }
       } else {
-        newAnswer = newAnswer.filter((v) => v !== value);
+        newAnswer = newAnswer.filter(v => v !== value);
       }
 
       onAnswer(newAnswer);
@@ -142,8 +128,9 @@ export default function QuizQuestion({
         animate="visible"
       >
         <motion.div className="space-y-3">
-          {question.options?.map((option, index) => {
-            const isChecked = Array.isArray(answer) && answer.includes(option.value);
+          {question.options?.map(option => {
+            const isChecked =
+              Array.isArray(answer) && answer.includes(option.value);
             const isDisabled = isMaxed && !isChecked;
 
             return (
@@ -152,14 +139,14 @@ export default function QuizQuestion({
                 variants={itemVariants}
                 className={`flex items-start space-x-3 p-4 rounded-lg border-2 transition-all cursor-pointer group neo-card ${
                   isChecked
-                    ? 'border-primary bg-primary/5'
-                    : 'border-border hover:border-primary/50 hover:bg-card/50'
-                } ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    ? "border-primary bg-primary/5"
+                    : "border-border hover:border-primary/50 hover:bg-card/50"
+                } ${isDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 <Checkbox
                   id={option.value}
                   checked={isChecked}
-                  onCheckedChange={(checked) =>
+                  onCheckedChange={checked =>
                     handleCheckboxChange(option.value, checked as boolean)
                   }
                   disabled={isDisabled}
@@ -168,7 +155,7 @@ export default function QuizQuestion({
                 <Label
                   htmlFor={option.value}
                   className={`flex-1 cursor-pointer text-base leading-relaxed ${
-                    isDisabled ? 'cursor-not-allowed' : ''
+                    isDisabled ? "cursor-not-allowed" : ""
                   }`}
                 >
                   {option.label}
