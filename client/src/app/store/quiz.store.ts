@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 import {
   QuizAnswers,
   ScoringRules,
@@ -26,77 +27,9 @@ interface QuizState {
   resetQuiz: () => void;
 }
 
-export const useQuizStore = create<QuizState>()((set, get) => ({
-  answers: {},
-  currentQuestionIndex: 0,
-  isFinished: false,
-  isSubmitting: false,
-  submitError: null,
-  score: null,
-  profile: null,
-
-  setAnswer: (questionId, answer) =>
-    set(state => ({
-      answers: { ...state.answers, [questionId]: answer },
-      submitError: null,
-    })),
-
-  nextQuestion: () =>
-    set(state => ({
-      currentQuestionIndex: state.currentQuestionIndex + 1,
-    })),
-
-  previousQuestion: () =>
-    set(state => ({
-      currentQuestionIndex: Math.max(0, state.currentQuestionIndex - 1),
-    })),
-
-  finishQuiz: async rules => {
-    const { answers } = get();
-
-    set({ isSubmitting: true, submitError: null });
-
-    const validationResult = quizSubmissionSchema.safeParse(answers);
-
-    if (!validationResult.success) {
-      console.error("Validation failed", validationResult.error.format());
-      set({
-        isSubmitting: false,
-        submitError: "ValidationFailed",
-      });
-      return;
-    }
-
-    const score = calculateConsultingScore(answers, rules);
-    const profile = determineProfile(score);
-
-    try {
-      await submitQuizLead(validationResult.data, score, profile);
-
-      console.log("Quiz finished successfully", {
-        finalScore: score,
-        profileCategory: profile,
-      });
-
-      set({
-        isSubmitting: false,
-        isFinished: true,
-        score,
-        profile,
-      });
-    } catch (error) {
-      console.error("Failed to finish quiz API layer", error);
-      set({
-        isSubmitting: false,
-        submitError: "SubmissionError",
-      });
-    }
-  },
-
-  resetQuiz: () => {
-    console.log("Resetting quiz state to initial values");
-
-    set({
+export const useQuizStore = create<QuizState>()(
+  persist(
+    (set, get) => ({
       answers: {},
       currentQuestionIndex: 0,
       isFinished: false,
@@ -104,6 +37,89 @@ export const useQuizStore = create<QuizState>()((set, get) => ({
       submitError: null,
       score: null,
       profile: null,
-    });
-  },
-}));
+
+      setAnswer: (questionId, answer) =>
+        set(state => ({
+          answers: { ...state.answers, [questionId]: answer },
+          submitError: null,
+        })),
+
+      nextQuestion: () =>
+        set(state => ({
+          currentQuestionIndex: state.currentQuestionIndex + 1,
+        })),
+
+      previousQuestion: () =>
+        set(state => ({
+          currentQuestionIndex: Math.max(0, state.currentQuestionIndex - 1),
+        })),
+
+      finishQuiz: async rules => {
+        const { answers } = get();
+
+        set({ isSubmitting: true, submitError: null });
+
+        const validationResult = quizSubmissionSchema.safeParse(answers);
+
+        if (!validationResult.success) {
+          console.error("Validation failed", validationResult.error.format());
+          set({
+            isSubmitting: false,
+            submitError: "ValidationFailed",
+          });
+          return;
+        }
+
+        const score = calculateConsultingScore(answers, rules);
+        const profile = determineProfile(score);
+
+        try {
+          await submitQuizLead(validationResult.data, score, profile);
+
+          console.log("Quiz finished successfully", {
+            finalScore: score,
+            profileCategory: profile,
+          });
+
+          set({
+            isSubmitting: false,
+            isFinished: true,
+            score,
+            profile,
+          });
+        } catch (error) {
+          console.error("Failed to finish quiz API layer", error);
+          set({
+            isSubmitting: false,
+            submitError: "SubmissionError",
+          });
+        }
+      },
+
+      resetQuiz: () => {
+        console.log("Resetting quiz state to initial values");
+        set({
+          answers: {},
+          currentQuestionIndex: 0,
+          isFinished: false,
+          isSubmitting: false,
+          submitError: null,
+          score: null,
+          profile: null,
+        });
+      },
+    }),
+    {
+      name: "mape-quiz-storage",
+      storage: createJSONStorage(() => localStorage),
+
+      partialize: state => ({
+        answers: state.answers,
+        currentQuestionIndex: state.currentQuestionIndex,
+        isFinished: state.isFinished,
+        score: state.score,
+        profile: state.profile,
+      }),
+    }
+  )
+);
