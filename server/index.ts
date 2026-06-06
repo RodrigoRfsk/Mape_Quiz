@@ -13,11 +13,6 @@ async function startServer() {
   const app = express();
   const server = createServer(app);
 
-  // ============================================================================
-  // 1. MIDDLEWARES GLOBAIS
-  // ============================================================================
-
-  // Permite pedidos locais do Vite (Porta 3000) durante o desenvolvimento
   app.use(
     cors({
       origin:
@@ -27,19 +22,9 @@ async function startServer() {
     })
   );
 
-  // Habilita o parse de JSON na payload dos pedidos (Crucial para a submissão do Quiz)
   app.use(express.json());
 
-  // ============================================================================
-  // 2. ROTAS DE API (Backend)
-  // ============================================================================
-  // Nota: Estas rotas devem OBRIGATORIAMENTE ser registadas antes dos ficheiros estáticos
-
   app.use("/api/leads", leadRoutes);
-
-  // ============================================================================
-  // 3. FICHEIROS ESTÁTICOS & SPA ROUTING (Frontend)
-  // ============================================================================
 
   const staticPath =
     process.env.NODE_ENV === "production"
@@ -48,7 +33,6 @@ async function startServer() {
 
   app.use(express.static(staticPath));
 
-  // Handle client-side routing - serve index.html for all routes
   app.get("*", (_req, res) => {
     res.sendFile(path.join(staticPath, "index.html"));
   });
