@@ -1,4 +1,4 @@
-import { useState } from "react"; // Adicionar useState
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -34,6 +34,9 @@ export default function Home() {
 
   const [stepError, setStepError] = useState<string | null>(null);
 
+  // State for UI transition (Hero -> Quiz)
+  const [hasStarted, setHasStarted] = useState<boolean>(false);
+
   const currentQuestion = QUIZ_QUESTIONS[currentQuestionIndex];
   const progress = ((currentQuestionIndex + 1) / QUIZ_QUESTIONS.length) * 100;
 
@@ -53,9 +56,7 @@ export default function Home() {
 
       if (!result.success) {
         const zodError = result.error as ZodError<string | string[]>;
-
         const errorMessage = zodError.issues[0]?.message || "Valor inválido.";
-
         setStepError(errorMessage);
         return;
       }
@@ -86,161 +87,180 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <QuizHero />
-
-      <div className="relative">
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary via-secondary to-accent" />
-        </div>
-
-        <div className="relative container py-12 md:py-20">
+    <div className="min-h-screen bg-background text-foreground flex flex-col">
+      <AnimatePresence mode="wait">
+        {!hasStarted ? (
           <motion.div
-            className="mb-12"
+            key="hero-view"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
+            exit={{ opacity: 0, y: -50, transition: { duration: 0.4 } }}
+            className="flex-1 flex flex-col"
           >
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-sm font-medium text-muted-foreground">
-                Pergunta {currentQuestionIndex + 1} de {QUIZ_QUESTIONS.length}
-              </span>
-              <span className="text-sm font-bold text-primary">
-                {Math.round(progress)}%
-              </span>
-            </div>
-            <div className="h-2 bg-card rounded-full overflow-hidden border border-border">
-              <motion.div
-                className="h-full bg-gradient-to-r from-primary via-secondary to-accent"
-                initial={{ width: 0 }}
-                animate={{ width: `${progress}%` }}
-                transition={{ duration: 0.5, ease: "easeOut" }}
-              />
-            </div>
+            <QuizHero onStart={() => setHasStarted(true)} />
           </motion.div>
+        ) : (
+          <motion.div
+            key="quiz-view"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="relative flex-1"
+          >
+            <div className="absolute inset-0 opacity-5">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary via-secondary to-accent" />
+            </div>
 
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentQuestionIndex}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Card className="border-2 border-border bg-card/50 backdrop-blur-sm p-8 md:p-12 neo-card shadow-lg">
-                <div className="max-w-2xl">
+            <div className="relative container py-12 md:py-20">
+              <motion.div
+                className="mb-12"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-sm font-medium text-muted-foreground">
+                    Pergunta {currentQuestionIndex + 1} de{" "}
+                    {QUIZ_QUESTIONS.length}
+                  </span>
+                  <span className="text-sm font-bold text-primary">
+                    {Math.round(progress)}%
+                  </span>
+                </div>
+                <div className="h-2 bg-card rounded-full overflow-hidden border border-border">
                   <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.1 }}
-                  >
-                    <h2 className="neo-display text-3xl md:text-4xl mb-2 text-foreground">
-                      {currentQuestion.question}
-                    </h2>
-                    {currentQuestion.subtext && (
-                      <p className="text-sm text-muted-foreground mb-6">
-                        {currentQuestion.subtext}
-                      </p>
-                    )}
-                  </motion.div>
-
-                  <QuizQuestion
-                    question={currentQuestion}
-                    answer={answers[currentQuestion.id]}
-                    onAnswer={handleAnswer}
-                    maxCheckboxes={2}
+                    className="h-full bg-gradient-to-r from-primary via-secondary to-accent"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progress}%` }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
                   />
                 </div>
+              </motion.div>
 
-                {stepError && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    className="mt-6 p-4 bg-destructive/10 border border-destructive rounded-md flex items-center gap-3 text-destructive"
-                  >
-                    <AlertCircle className="w-5 h-5 shrink-0" />
-                    <p className="text-sm font-medium">{stepError}</p>
-                  </motion.div>
-                )}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentQuestionIndex}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <Card className="border-2 border-border bg-card/50 backdrop-blur-sm p-8 md:p-12 neo-card shadow-lg">
+                    <div className="max-w-2xl">
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.1 }}
+                      >
+                        <h2 className="neo-display text-3xl md:text-4xl mb-2 text-foreground">
+                          {currentQuestion.question}
+                        </h2>
+                        {currentQuestion.subtext && (
+                          <p className="text-sm text-muted-foreground mb-6">
+                            {currentQuestion.subtext}
+                          </p>
+                        )}
+                      </motion.div>
 
-                {submitError &&
-                  currentQuestionIndex === QUIZ_QUESTIONS.length - 1 &&
-                  !stepError && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      className="mt-6 p-4 bg-destructive/10 border border-destructive rounded-md flex items-center gap-3 text-destructive"
-                    >
-                      <AlertCircle className="w-5 h-5 shrink-0" />
-                      <p className="text-sm font-medium">
-                        Ocorreu um erro ao enviar os dados. Tente novamente.
-                      </p>
-                    </motion.div>
+                      <QuizQuestion
+                        question={currentQuestion}
+                        answer={answers[currentQuestion.id]}
+                        onAnswer={handleAnswer}
+                        maxCheckboxes={2}
+                      />
+                    </div>
+
+                    {stepError && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        className="mt-6 p-4 bg-destructive/10 border border-destructive rounded-md flex items-center gap-3 text-destructive"
+                      >
+                        <AlertCircle className="w-5 h-5 shrink-0" />
+                        <p className="text-sm font-medium">{stepError}</p>
+                      </motion.div>
+                    )}
+
+                    {submitError &&
+                      currentQuestionIndex === QUIZ_QUESTIONS.length - 1 &&
+                      !stepError && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          className="mt-6 p-4 bg-destructive/10 border border-destructive rounded-md flex items-center gap-3 text-destructive"
+                        >
+                          <AlertCircle className="w-5 h-5 shrink-0" />
+                          <p className="text-sm font-medium">
+                            Ocorreu um erro ao enviar os dados. Tente novamente.
+                          </p>
+                        </motion.div>
+                      )}
+                  </Card>
+                </motion.div>
+              </AnimatePresence>
+
+              <motion.div
+                className="flex gap-4 mt-8 justify-between"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+              >
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setStepError(null);
+                    previousQuestion();
+                  }}
+                  disabled={currentQuestionIndex === 0 || isSubmitting}
+                  className="px-6 py-2 border-2 border-border hover:bg-card/50"
+                >
+                  ← Anterior
+                </Button>
+
+                <Button
+                  onClick={handleNext}
+                  disabled={!isAnswered || isSubmitting}
+                  className="px-8 py-2 bg-primary text-primary-foreground hover:bg-primary/90 border-2 border-primary font-bold flex items-center gap-2 group min-w-[140px] justify-center"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />A processar...
+                    </>
+                  ) : currentQuestionIndex === QUIZ_QUESTIONS.length - 1 ? (
+                    <>
+                      <CheckCircle2 className="w-4 h-4" />
+                      Finalizar
+                    </>
+                  ) : (
+                    <>
+                      Próxima
+                      <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </>
                   )}
-              </Card>
-            </motion.div>
-          </AnimatePresence>
+                </Button>
+              </motion.div>
 
-          <motion.div
-            className="flex gap-4 mt-8 justify-between"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-          >
-            <Button
-              variant="outline"
-              onClick={() => {
-                setStepError(null);
-                previousQuestion();
-              }}
-              disabled={currentQuestionIndex === 0 || isSubmitting}
-              className="px-6 py-2 border-2 border-border hover:bg-card/50"
-            >
-              ← Anterior
-            </Button>
-
-            <Button
-              onClick={handleNext}
-              disabled={!isAnswered || isSubmitting}
-              className="px-8 py-2 bg-primary text-primary-foreground hover:bg-primary/90 border-2 border-primary font-bold flex items-center gap-2 group min-w-[140px] justify-center"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />A processar...
-                </>
-              ) : currentQuestionIndex === QUIZ_QUESTIONS.length - 1 ? (
-                <>
-                  <CheckCircle2 className="w-4 h-4" />
-                  Finalizar
-                </>
-              ) : (
-                <>
-                  Próxima
-                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </>
-              )}
-            </Button>
+              <motion.div
+                className="mt-8 flex gap-2 justify-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+              >
+                {[1, 2, 3, 4].map(block => (
+                  <div
+                    key={block}
+                    className={`h-2 rounded-full transition-all ${
+                      currentQuestion.block >= block
+                        ? "bg-primary w-8"
+                        : "bg-border w-2"
+                    }`}
+                  />
+                ))}
+              </motion.div>
+            </div>
           </motion.div>
-
-          <motion.div
-            className="mt-8 flex gap-2 justify-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-          >
-            {[1, 2, 3, 4].map(block => (
-              <div
-                key={block}
-                className={`h-2 rounded-full transition-all ${
-                  currentQuestion.block >= block
-                    ? "bg-primary w-8"
-                    : "bg-border w-2"
-                }`}
-              />
-            ))}
-          </motion.div>
-        </div>
-      </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
