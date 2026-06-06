@@ -1,17 +1,23 @@
-import { motion } from 'framer-motion';
-import { Sparkles } from 'lucide-react';
+import { motion } from "framer-motion";
+import { Sparkles, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
-export default function QuizHero() {
+interface QuizHeroProps {
+  onStart: () => void;
+}
+
+export default function QuizHero({ onStart }: QuizHeroProps) {
   return (
-    <div className="relative overflow-hidden bg-background">
+    <div className="relative min-h-screen overflow-hidden bg-background flex flex-col justify-center">
       {/* Animated background elements */}
       <div className="absolute inset-0">
-        <div 
+        <div
           className="absolute inset-0 opacity-20"
           style={{
-            backgroundImage: 'url(https://d2xsxph8kpxj0f.cloudfront.net/310419663029531747/m3Sqewg9SCnfy74MFqsopm/mape-hero-abstract-ZtxYmZ3XAGb44SvE3ZbLJm.webp)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
+            backgroundImage:
+              "url(https://d2xsxph8kpxj0f.cloudfront.net/310419663029531747/m3Sqewg9SCnfy74MFqsopm/mape-hero-abstract-ZtxYmZ3XAGb44SvE3ZbLJm.webp)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
           }}
         />
         <motion.div
@@ -33,7 +39,7 @@ export default function QuizHero() {
       </div>
 
       {/* Main content with diagonal cut */}
-      <div className="relative diagonal-cut bg-gradient-to-br from-card via-background to-card/50 pt-20 pb-32 md:pt-32 md:pb-48">
+      <div className="relative diagonal-cut bg-gradient-to-br from-card via-background to-card/50 py-20 md:py-32 w-full">
         <div className="container">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -49,7 +55,9 @@ export default function QuizHero() {
               className="inline-flex items-center gap-2 mb-6 px-4 py-2 bg-primary/10 border border-primary/30 rounded-full"
             >
               <Sparkles className="w-4 h-4 text-primary" />
-              <span className="text-sm font-semibold text-primary">Método MAPE</span>
+              <span className="text-sm font-semibold text-primary">
+                Método MAPE
+              </span>
             </motion.div>
 
             {/* Main heading */}
@@ -72,9 +80,9 @@ export default function QuizHero() {
               transition={{ delay: 0.3, duration: 0.6 }}
               className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl leading-relaxed"
             >
-              Entenda seu momento e personalize sua experiência na masterclass. 
-              Este formulário tem um propósito único: descobrir onde você está agora 
-              para calibrar o conteúdo para o seu perfil real.
+              Entenda seu momento e personalize sua experiência na masterclass.
+              Este formulário tem um propósito único: descobrir onde você está
+              agora para calibrar o conteúdo para o seu perfil real.
             </motion.p>
 
             {/* CTA Info */}
@@ -82,7 +90,7 @@ export default function QuizHero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.6 }}
-              className="flex flex-col sm:flex-row gap-4 text-sm text-muted-foreground"
+              className="flex flex-col sm:flex-row gap-4 text-sm text-muted-foreground mb-10"
             >
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-primary" />
@@ -97,6 +105,22 @@ export default function QuizHero() {
                 <span>Respostas confidenciais</span>
               </div>
             </motion.div>
+
+            {/* Start Button */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.6 }}
+            >
+              <Button
+                onClick={onStart}
+                size="lg"
+                className="px-8 py-6 text-lg bg-primary text-primary-foreground hover:bg-primary/90 border-2 border-primary font-bold flex items-center gap-2 group"
+              >
+                Começar Diagnóstico
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </motion.div>
           </motion.div>
         </div>
 
@@ -105,7 +129,7 @@ export default function QuizHero() {
           className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-32 bg-gradient-to-b from-primary via-secondary to-transparent"
           initial={{ opacity: 0, scaleY: 0 }}
           animate={{ opacity: 1, scaleY: 1 }}
-          transition={{ delay: 0.5, duration: 0.6 }}
+          transition={{ delay: 0.6, duration: 0.6 }}
         />
       </div>
     </div>
