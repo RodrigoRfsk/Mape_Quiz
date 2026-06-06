@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { quizSubmissionSchema } from "../../../client/src/infrastructure/validations/quiz.schema";
-import { db } from "server/db";
-import { leads } from "server/db/schema";
+import { db } from "server/src/db";
+import { leads } from "server/src/db/schema";
 
 export const createLead = async (
   req: Request,
