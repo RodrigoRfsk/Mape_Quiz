@@ -42,79 +42,46 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
-:root {
-  --primary: #FFD700;
-  --primary-foreground: #0A0A0A;
-  --secondary: #FF6B35;
-  --secondary-foreground: #FFFFFF;
-  --accent: #1E40AF;
-  --accent-foreground: #FFFFFF;
-  --sidebar-primary: #FFD700;
-  --sidebar-primary-foreground: #0A0A0A;
-  --chart-1: #FFD700;
-  --chart-2: #FF6B35;
-  --chart-3: #1E40AF;
-  --chart-4: #FF6B35;
-  --chart-5: #FFD700;
-  --radius: 0.65rem;
-  --background: #0A0A0A;
-  --foreground: #FFFFFF;
-  --card: #1A1A1A;
-  --card-foreground: #FFFFFF;
-  --popover: #1A1A1A;
-  --popover-foreground: #FFFFFF;
-  --muted: #4B5563;
-  --muted-foreground: #D1D5DB;
-  --destructive: #FF6B35;
-  --destructive-foreground: #FFFFFF;
-  --border: #333333;
-  --input: #1A1A1A;
-  --ring: #FFD700;
-  --sidebar: #0A0A0A;
-  --sidebar-foreground: #FFFFFF;
-  --sidebar-accent: #FFD700;
-  --sidebar-accent-foreground: #0A0A0A;
-  --sidebar-border: #333333;
-  --sidebar-ring: #FFD700;
-}
-
+:root,
 .dark {
-  --primary: #FFD700;
-  --primary-foreground: #0A0A0A;
-  --secondary: #FF6B35;
-  --secondary-foreground: #FFFFFF;
-  --accent: #1E40AF;
-  --accent-foreground: #FFFFFF;
-  --sidebar-primary: #FFD700;
-  --sidebar-primary-foreground: #0A0A0A;
-  --background: #0A0A0A;
-  --foreground: #FFFFFF;
-  --card: #1A1A1A;
-  --card-foreground: #FFFFFF;
-  --popover: #1A1A1A;
-  --popover-foreground: #FFFFFF;
-  --secondary: #FF6B35;
-  --secondary-foreground: #FFFFFF;
-  --muted: #4B5563;
-  --muted-foreground: #D1D5DB;
-  --accent: #1E40AF;
-  --accent-foreground: #FFFFFF;
-  --destructive: #FF6B35;
-  --destructive-foreground: #FFFFFF;
-  --border: #333333;
-  --input: #1A1A1A;
-  --ring: #FFD700;
-  --chart-1: #FFD700;
-  --chart-2: #FF6B35;
-  --chart-3: #1E40AF;
-  --chart-4: #FF6B35;
-  --chart-5: #FFD700;
-  --sidebar: #0A0A0A;
-  --sidebar-foreground: #FFFFFF;
-  --sidebar-accent: #FFD700;
-  --sidebar-accent-foreground: #0A0A0A;
-  --sidebar-border: #333333;
-  --sidebar-ring: #FFD700;
+  /* Cores de Marca */
+  --primary: #ffd700;
+  --primary-foreground: #000000;
+  --secondary: #ff6b35;
+  --secondary-foreground: #ffffff;
+  --accent: #1e40af;
+  --accent-foreground: #ffffff;
+
+  --background: #000000;
+  --foreground: #ffffff;
+  --card: #0a0a0a;
+  --card-foreground: #ffffff;
+  --popover: #0a0a0a;
+  --popover-foreground: #ffffff;
+
+  --muted: #27272a;
+  --muted-foreground: #a1a1aa;
+  --border: #222222;
+  --input: #0a0a0a;
+  --ring: #ffd700;
+
+  --destructive: #ff6b35;
+  --destructive-foreground: #ffffff;
+  --radius: 0.65rem;
+
+  --sidebar-primary: #ffd700;
+  --sidebar-primary-foreground: #000000;
+  --chart-1: #ffd700;
+  --chart-2: #ff6b35;
+  --chart-3: #1e40af;
+  --chart-4: #ff6b35;
+  --chart-5: #ffd700;
+  --sidebar: #000000;
+  --sidebar-foreground: #ffffff;
+  --sidebar-accent: #ffd700;
+  --sidebar-accent-foreground: #000000;
+  --sidebar-border: #222222;
+  --sidebar-ring: #ffd700;
 }
 
 @layer base {
@@ -138,24 +105,11 @@
 }
 
 @layer components {
-  /**
-   * Custom container utility that centers content and adds responsive padding.
-   *
-   * This overrides Tailwind's default container behavior to:
-   * - Auto-center content (mx-auto)
-   * - Add responsive horizontal padding
-   * - Set max-width for large screens
-   *
-   * Usage: <div className="container">...</div>
-   *
-   * For custom widths, use max-w-* utilities directly:
-   * <div className="max-w-6xl mx-auto px-4">...</div>
-   */
   .container {
     width: 100%;
     margin-left: auto;
     margin-right: auto;
-    padding-left: 1rem; /* 16px - mobile padding */
+    padding-left: 1rem;
     padding-right: 1rem;
   }
 
@@ -166,29 +120,29 @@
 
   @media (min-width: 640px) {
     .container {
-      padding-left: 1.5rem; /* 24px - tablet padding */
+      padding-left: 1.5rem;
       padding-right: 1.5rem;
     }
   }
 
   @media (min-width: 1024px) {
     .container {
-      padding-left: 2rem; /* 32px - desktop padding */
+      padding-left: 2rem;
       padding-right: 2rem;
-      max-width: 1280px; /* Standard content width */
+      max-width: 1280px;
     }
   }
 }
 
 /* Neo-Brutalism Custom Styles */
 .neo-display {
-  font-family: 'Clash Grotesk', sans-serif;
+  font-family: "Clash Grotesk", sans-serif;
   font-weight: 700;
   letter-spacing: -0.02em;
 }
 
 .neo-heading {
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   font-weight: 700;
   letter-spacing: -0.01em;
 }
@@ -206,23 +160,24 @@
 }
 
 .accent-line::before {
-  content: '';
+  content: "";
   position: absolute;
   left: 0;
   top: 0;
   width: 4px;
   height: 100%;
-  background: linear-gradient(to bottom, #FFD700, #FF6B35);
+  background: linear-gradient(to bottom, #ffd700, #ff6b35);
 }
 
 .glow-accent {
-  box-shadow: 0 0 20px rgba(255, 215, 0, 0.3), inset 0 0 20px rgba(255, 215, 0, 0.1);
+  box-shadow:
+    0 0 20px rgba(255, 215, 0, 0.3),
+    inset 0 0 20px rgba(255, 215, 0, 0.1);
 }
 
 .border-thick {
   border-width: 3px;
 }
-
 
 /* Input and form enhancements */
 input[type="text"],
@@ -236,7 +191,9 @@ input[type="text"]:focus,
 input[type="email"]:focus,
 input[type="tel"]:focus,
 textarea:focus {
-  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1), 0 0 20px rgba(255, 215, 0, 0.2);
+  box-shadow:
+    0 0 0 3px rgba(255, 215, 0, 0.1),
+    0 0 20px rgba(255, 215, 0, 0.2);
 }
 
 /* Button animations */
@@ -258,7 +215,7 @@ button:hover:not(:disabled) {
 }
 
 .neo-card:hover {
-  border-color: #FFD700;
+  border-color: #ffd700;
   box-shadow: 0 0 20px rgba(255, 215, 0, 0.15);
   transform: translateY(-2px);
 }
