@@ -13,6 +13,7 @@ export const quizSubmissionSchema = z.object({
     .string()
     .min(2, "Por favor, elabore um pouco mais a sua pergunta."),
   email: z.string().email("Por favor, introduza um endereço de e-mail válido."),
+  phone: z.string("Por favor, introduza um número de telefone válido."),
   clarity: z.enum(["clear", "partial", "unclear"]),
   sector: z.string().min(2, "O setor deve ter pelo menos 2 caracteres."),
   clients: z.enum(["none", "pontual", "irregular", "stable"]),
