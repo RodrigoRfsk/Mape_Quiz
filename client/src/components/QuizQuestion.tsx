@@ -46,7 +46,7 @@ export default function QuizQuestion({
           placeholder={question.placeholder}
           value={(answer as string) || ""}
           onChange={e => onAnswer(e.target.value)}
-          className="text-base py-3 px-4 border-2 border-border bg-background text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary"
+          className="text-base py-6 px-4 border-2 border-border bg-transparent text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary rounded-lg transition-all"
         />
       </motion.div>
     );
@@ -63,7 +63,7 @@ export default function QuizQuestion({
           placeholder={question.placeholder}
           value={(answer as string) || ""}
           onChange={e => onAnswer(e.target.value)}
-          className="text-base py-3 px-4 border-2 border-border bg-background text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary min-h-24"
+          className="text-base py-4 px-4 border-2 border-border bg-transparent text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary min-h-32 rounded-lg transition-all"
         />
       </motion.div>
     );
@@ -78,25 +78,37 @@ export default function QuizQuestion({
       >
         <RadioGroup value={(answer as string) || ""} onValueChange={onAnswer}>
           <motion.div className="space-y-3">
-            {question.options?.map(option => (
-              <motion.div
-                key={option.value}
-                variants={itemVariants}
-                className="flex items-start space-x-3 p-4 rounded-lg border-2 border-border hover:border-primary/50 hover:bg-card/50 transition-all cursor-pointer group neo-card"
-              >
-                <RadioGroupItem
-                  value={option.value}
-                  id={option.value}
-                  className="mt-1 border-2 border-border group-hover:border-primary"
-                />
-                <Label
-                  htmlFor={option.value}
-                  className="flex-1 cursor-pointer text-base leading-relaxed"
+            {question.options?.map(option => {
+              const isSelected = answer === option.value;
+
+              return (
+                <motion.div
+                  key={option.value}
+                  variants={itemVariants}
+                  className={`flex items-start space-x-3 p-4 rounded-lg border-2 transition-all cursor-pointer group ${
+                    isSelected
+                      ? "border-primary bg-primary/10"
+                      : "border-border bg-transparent hover:border-primary/50 hover:bg-primary/5"
+                  }`}
                 >
-                  {option.label}
-                </Label>
-              </motion.div>
-            ))}
+                  <RadioGroupItem
+                    value={option.value}
+                    id={option.value}
+                    className={`mt-1 border-2 transition-colors ${
+                      isSelected
+                        ? "border-primary text-primary"
+                        : "border-muted-foreground group-hover:border-primary/50"
+                    }`}
+                  />
+                  <Label
+                    htmlFor={option.value}
+                    className="flex-1 cursor-pointer text-base leading-relaxed text-foreground"
+                  >
+                    {option.label}
+                  </Label>
+                </motion.div>
+              );
+            })}
           </motion.div>
         </RadioGroup>
       </motion.div>
@@ -137,11 +149,15 @@ export default function QuizQuestion({
               <motion.div
                 key={option.value}
                 variants={itemVariants}
-                className={`flex items-start space-x-3 p-4 rounded-lg border-2 transition-all cursor-pointer group neo-card ${
+                className={`flex items-start space-x-3 p-4 rounded-lg border-2 transition-all cursor-pointer group ${
                   isChecked
-                    ? "border-primary bg-primary/5"
-                    : "border-border hover:border-primary/50 hover:bg-card/50"
-                } ${isDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
+                    ? "border-primary bg-primary/10"
+                    : "border-border bg-transparent hover:border-primary/50 hover:bg-primary/5"
+                } ${
+                  isDisabled
+                    ? "opacity-50 cursor-not-allowed hover:border-border hover:bg-transparent"
+                    : ""
+                }`}
               >
                 <Checkbox
                   id={option.value}
@@ -150,11 +166,15 @@ export default function QuizQuestion({
                     handleCheckboxChange(option.value, checked as boolean)
                   }
                   disabled={isDisabled}
-                  className="mt-1"
+                  className={`mt-1 border-2 transition-colors ${
+                    isChecked
+                      ? "border-primary"
+                      : "border-muted-foreground group-hover:border-primary/50"
+                  }`}
                 />
                 <Label
                   htmlFor={option.value}
-                  className={`flex-1 cursor-pointer text-base leading-relaxed ${
+                  className={`flex-1 cursor-pointer text-base leading-relaxed text-foreground ${
                     isDisabled ? "cursor-not-allowed" : ""
                   }`}
                 >
@@ -164,11 +184,11 @@ export default function QuizQuestion({
             );
           })}
         </motion.div>
-        {maxCheckboxes && (
+        {maxCheckboxes > 0 && (
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-xs text-muted-foreground mt-4"
+            className="text-sm font-medium text-muted-foreground mt-4"
           >
             {selectedCount}/{maxCheckboxes} selecionadas
           </motion.p>
