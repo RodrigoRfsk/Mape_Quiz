@@ -21,16 +21,8 @@ export const QUIZ_QUESTIONS: Question[] = [
     id: "name",
     block: 1,
     type: "text",
-    question: "Qual é o seu nome completo?",
+    question: "Qual o seu Primeiro Nome?",
     placeholder: "Digite seu nome",
-  },
-  {
-    id: "area",
-    block: 1,
-    type: "text",
-    question: "Qual é a sua área de atuação principal ao longo da carreira?",
-    placeholder:
-      "Ex: Finanças corporativas, Operações, Estratégia, RH, Tecnologia...",
   },
   {
     id: "experience",
@@ -71,6 +63,14 @@ export const QUIZ_QUESTIONS: Question[] = [
           "Atuo como consultor independente há mais de 18 meses — quero estruturar melhor o que já existe",
       },
     ],
+  },
+  {
+    id: "area",
+    block: 1,
+    type: "text",
+    question: "Qual é a sua área de atuação principal ao longo da carreira?",
+    placeholder:
+      "Ex: Finanças corporativas, Operações, Estratégia, RH, Tecnologia...",
   },
   {
     id: "obstacles",
@@ -118,22 +118,6 @@ export const QUIZ_QUESTIONS: Question[] = [
     ],
   },
   {
-    id: "main-question",
-    block: 2,
-    type: "text",
-    question:
-      "Em uma frase, qual é a pergunta que você mais gostaria que a masterclass respondesse?",
-    placeholder:
-      "Seja específico — essa informação orienta diretamente o conteúdo",
-  },
-  {
-    id: "email",
-    block: 1,
-    type: "text",
-    question: "Qual é o seu melhor email para contato?",
-    placeholder: "seu@email.com",
-  },
-  {
     id: "clarity",
     block: 3,
     type: "radio",
@@ -158,13 +142,11 @@ export const QUIZ_QUESTIONS: Question[] = [
     ],
   },
   {
-    id: "sector",
-    block: 3,
+    id: "phone",
+    block: 1,
     type: "text",
-    question:
-      "Qual é o setor ou perfil de organização com maior potencial para a sua consultoria?",
-    placeholder:
-      "Ex: Empresas familiares em processo de profissionalização, indústria de médio porte...",
+    question: "Qual é o seu telefone com DDD?",
+    placeholder: "(00) 00000-0000",
   },
   {
     id: "clients",
@@ -193,7 +175,7 @@ export const QUIZ_QUESTIONS: Question[] = [
     block: 4,
     type: "radio",
     question:
-      "Qual resultado concreto você espera ter clareza sobre ao sair da masterclass?",
+      "Qual resultado concreto você espera ter clareza ao sair da do encontro estratégico?",
     options: [
       {
         value: "structure",
@@ -223,6 +205,15 @@ export const QUIZ_QUESTIONS: Question[] = [
     ],
   },
   {
+    id: "main-question",
+    block: 2,
+    type: "text",
+    question:
+      "Em uma frase, qual é a pergunta que você mais gostaria que o encontro estratégico respondesse?",
+    placeholder:
+      "Seja específico — essa informação orienta diretamente o conteúdo",
+  },
+  {
     id: "timeline",
     block: 4,
     type: "radio",
@@ -236,6 +227,15 @@ export const QUIZ_QUESTIONS: Question[] = [
     ],
   },
   {
+    id: "sector",
+    block: 3,
+    type: "text",
+    question:
+      "Qual é o setor ou perfil de organização com maior potencial para a sua consultoria?",
+    placeholder:
+      "Ex: Empresas familiares em processo de profissionalização, indústria de médio porte...",
+  },
+  {
     id: "additional",
     block: 4,
     type: "text",
@@ -243,6 +243,13 @@ export const QUIZ_QUESTIONS: Question[] = [
       "Há algo mais que queira compartilhar sobre o seu momento ou o que espera da Jornada MAPE?",
     placeholder: "Campo livre — use se quiser dar mais contexto (opcional)",
     optional: true,
+  },
+  {
+    id: "email",
+    block: 1,
+    type: "text",
+    question: "Qual é o seu melhor email?",
+    placeholder: "seu@email.com",
   },
 ];
 
@@ -289,7 +296,7 @@ export const getCategoryDisplayData = (profile: ProfileCategory) => {
       description:
         "Você está em processo de transição, com experiência sólida e começando a estruturar sua entrada no mercado consultivo.",
       color: "from-purple-500 to-purple-600",
-      icon: "🚀",
+      icon: "",
     },
     "Consultor Iniciante": {
       label: "Consultor Iniciante",
