@@ -25,6 +25,19 @@ export default function QuizResults({
   score,
   category,
 }: QuizResultsProps) {
+  const rawName = (answers.name as string) || "";
+  const firstName = rawName.trim()
+    ? rawName.trim().split(" ")[0].charAt(0).toUpperCase() +
+      rawName.trim().split(" ")[0].slice(1).toLowerCase()
+    : "Você";
+
+  const personalizeText = (text: string) => {
+    if (!rawName.trim()) return text;
+    return text.replace(/\bvocê\b/gi, firstName);
+  };
+
+  const isEspecialista = category.label.includes("Especialista");
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -43,11 +56,6 @@ export default function QuizResults({
 
   const handleNextSteps = () => {
     toast.success("Redirecionando para os próximos passos...");
-    // Aqui poderá implementar um window.location.href para a Masterclass ou grupo VIP
-  };
-
-  const handleRestart = () => {
-    window.location.reload();
   };
 
   const getCategoryIcon = () => {
@@ -76,7 +84,6 @@ export default function QuizResults({
           animate="visible"
           className="max-w-3xl mx-auto"
         >
-          {/* Score Display */}
           <motion.div variants={itemVariants} className="mb-12">
             <div className="text-center mb-8">
               <motion.div
@@ -87,28 +94,41 @@ export default function QuizResults({
                 {getCategoryIcon()}
               </motion.div>
 
-              <h2 className="neo-display text-5xl md:text-6xl mb-4">
+              <h2 className="neo-display text-5xl md:text-6xl mb-4 text-primary">
                 {score}
-                <span className="text-3xl text-muted-foreground">/100</span>
+                <span className="text-3xl text-muted-foreground ml-1">
+                  /100
+                </span>
               </h2>
 
               <p className="text-muted-foreground mb-2">
-                Seu Score de Consultoria
+                Score de Consultoria de {firstName}
               </p>
             </div>
           </motion.div>
 
-          {/* Category Card */}
           <motion.div variants={itemVariants} className="mb-8">
             <Card
-              className={`border-2 border-primary bg-gradient-to-br ${category.color} bg-opacity-10 backdrop-blur-sm p-8 md:p-12 neo-card shadow-lg`}
+              className={`relative overflow-hidden border-2 backdrop-blur-sm p-8 md:p-12 neo-card shadow-lg transition-colors ${
+                isEspecialista
+                  ? "border-primary bg-primary/10"
+                  : "border-border bg-card/50"
+              }`}
             >
-              <div className="text-center">
+              <div
+                className={`absolute -top-24 -right-24 w-48 h-48 rounded-full blur-3xl pointer-events-none ${
+                  isEspecialista ? "bg-primary/20" : "bg-muted/20"
+                }`}
+              />
+
+              <div className="relative text-center z-10">
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ delay: 0.3, type: "spring" }}
-                  className="text-6xl mb-4"
+                  className={`text-6xl mb-4 ${
+                    isEspecialista ? "text-primary" : ""
+                  }`}
                 >
                   {category.icon}
                 </motion.div>
@@ -118,13 +138,12 @@ export default function QuizResults({
                 </h3>
 
                 <p className="text-lg text-muted-foreground leading-relaxed">
-                  {category.description}
+                  {personalizeText(category.description)}
                 </p>
               </div>
             </Card>
           </motion.div>
 
-          {/* Score Breakdown */}
           <motion.div variants={itemVariants} className="mb-8">
             <h4 className="neo-heading text-2xl mb-4">Análise Detalhada</h4>
 
@@ -171,7 +190,6 @@ export default function QuizResults({
             </div>
           </motion.div>
 
-          {/* Recommendations */}
           <motion.div variants={itemVariants} className="mb-8">
             <h4 className="neo-heading text-2xl mb-4">
               Próximos Passos Recomendados
@@ -189,54 +207,52 @@ export default function QuizResults({
                   <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center flex-shrink-0 text-sm font-bold">
                     {index + 1}
                   </div>
-                  <p className="text-base leading-relaxed">{rec}</p>
+                  <p className="text-base leading-relaxed">
+                    {personalizeText(rec)}
+                  </p>
                 </motion.div>
               ))}
             </div>
           </motion.div>
 
-          {/* Call to Action */}
+          {/* NOVO CTA */}
           <motion.div
             variants={itemVariants}
-            className="bg-primary/10 border border-primary/30 rounded-lg p-6 mb-8"
+            className="bg-primary/10 border border-primary/30 rounded-lg p-8 mb-8 text-center"
           >
-            <p className="text-sm font-bold text-primary mb-4">
-              ✓ Os seus resultados foram guardados com sucesso! Verifique a sua
-              caixa de entrada para aceder a:
+            <p className="text-2xl md:text-3xl font-black text-primary mb-4">
+              Seu diagnóstico mostrou seu estágio atual.
             </p>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-primary" />
-                <span>Análise detalhada do seu perfil profissional</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-secondary" />
-                <span>Roadmap de transição personalizado</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-accent" />
-                <span>Acesso exclusivo à próxima Masterclass</span>
-              </li>
-            </ul>
-          </motion.div>
 
-          {/* Buttons */}
-          <motion.div
-            variants={itemVariants}
-            className="flex flex-col sm:flex-row gap-4 justify-center"
-          >
-            <Button
-              onClick={handleRestart}
-              variant="outline"
-              className="border-2 border-border hover:bg-card/50 px-8"
-            >
-              Fazer Novo Diagnóstico
-            </Button>
+            <p className="text-base text-foreground mb-4 leading-relaxed max-w-2xl mx-auto">
+              Agora é hora de entender como{" "}
+              <span className="font-bold text-primary">
+                transformar sua experiência em uma consultoria
+              </span>{" "}
+              que o mercado compreenda, valorize e contrate.
+            </p>
+
+            <p className="text-base text-foreground mb-6 leading-relaxed max-w-2xl mx-auto">
+              Para ajudá-lo nessa jornada, criamos um{" "}
+              <span className="font-bold text-primary">
+                encontro estratégico exclusivo
+              </span>{" "}
+              que acontecerá no dia{" "}
+              <span className="font-bold text-primary">02 de julho</span>, onde
+              você conhecerá os pilares para estruturar sua oferta consultiva e
+              fortalecer sua autoridade no mercado.
+            </p>
+
+            <p className="text-base font-bold text-foreground mb-6 leading-relaxed max-w-2xl mx-auto">
+              Clique abaixo e reserve sua vaga gratuitamente:
+            </p>
+
             <Button
               onClick={handleNextSteps}
-              className="bg-primary text-primary-foreground hover:bg-primary/90 border-2 border-primary font-bold px-8"
+              size="lg"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 border-2 border-primary font-bold px-10 py-6 text-lg w-full sm:w-auto"
             >
-              Aceder aos Próximos Passos
+              Quero Reservar Minha Vaga
             </Button>
           </motion.div>
         </motion.div>
