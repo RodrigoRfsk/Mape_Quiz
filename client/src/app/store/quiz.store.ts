@@ -1,16 +1,19 @@
-import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
-import {
-  QuizAnswers,
-  ScoringRules,
-  ProfileCategory,
-} from "../../domain/quiz/types";
 import {
   calculateConsultingScore,
   determineProfile,
-} from "../../domain/quiz/scoring.service";
-import { quizSubmissionSchema } from "../../infrastructure/validations/quiz.schema";
-import { submitQuizLead } from "../../infrastructure/api/quiz.service";
+} from "@/domain/quiz/scoring.service";
+import {
+  QuizAnswers,
+  ProfileCategory,
+  ScoringRules,
+} from "@/domain/quiz/types";
+import {
+  submitQuizLead,
+  ApiSubmissionError,
+} from "@/infrastructure/api/quiz.service";
+import { quizSubmissionSchema } from "@/infrastructure/validations/quiz.schema";
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 interface QuizState {
   answers: QuizAnswers;
@@ -62,7 +65,7 @@ export const useQuizStore = create<QuizState>()(
         const validationResult = quizSubmissionSchema.safeParse(answers);
 
         if (!validationResult.success) {
-          console.error("Validation failed", validationResult.error.format());
+          console.error("Payload validation failed during submission");
           set({
             isSubmitting: false,
             submitError: "ValidationFailed",
@@ -76,10 +79,7 @@ export const useQuizStore = create<QuizState>()(
         try {
           await submitQuizLead(validationResult.data, score, profile);
 
-          console.log("Quiz finished successfully", {
-            finalScore: score,
-            profileCategory: profile,
-          });
+          console.log("Lead captured and quiz finalized successfully");
 
           set({
             isSubmitting: false,
@@ -87,17 +87,26 @@ export const useQuizStore = create<QuizState>()(
             score,
             profile,
           });
-        } catch (error) {
-          console.error("Failed to finish quiz API layer", error);
+        } catch (error: unknown) {
+          console.error("Critical failure at API integration layer", error);
+
+          if (error instanceof ApiSubmissionError) {
+            set({
+              isSubmitting: false,
+              submitError: error.code,
+            });
+            return;
+          }
+
           set({
             isSubmitting: false,
-            submitError: "SubmissionError",
+            submitError: "InternalClientError",
           });
         }
       },
 
       resetQuiz: () => {
-        console.log("Resetting quiz state to initial values");
+        console.log("Flushing store and resetting quiz state");
         set({
           answers: {},
           currentQuestionIndex: 0,
@@ -112,7 +121,6 @@ export const useQuizStore = create<QuizState>()(
     {
       name: "mape-quiz-storage",
       storage: createJSONStorage(() => localStorage),
-
       partialize: state => ({
         answers: state.answers,
         currentQuestionIndex: state.currentQuestionIndex,
