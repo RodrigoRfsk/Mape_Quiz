@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -131,6 +131,31 @@ export default function Home() {
       (Array.isArray(answers[currentQuestion.id])
         ? answers[currentQuestion.id].length > 0
         : true));
+
+  useEffect(() => {
+    const handleEnterKey = (event: KeyboardEvent) => {
+      if (event.key !== "Enter" || event.shiftKey) return;
+      if (!hasStarted || isFinished || isAnalyzing || isSubmitting) return;
+      if (!isAnswered) return;
+
+      const tag = (event.target as HTMLElement | null)?.tagName;
+      if (tag === "TEXTAREA" || tag === "BUTTON" || tag === "A") return;
+
+      event.preventDefault();
+      void handleNext();
+    };
+
+    window.addEventListener("keydown", handleEnterKey);
+    return () => window.removeEventListener("keydown", handleEnterKey);
+  }, [
+    hasStarted,
+    isFinished,
+    isAnalyzing,
+    isSubmitting,
+    isAnswered,
+    currentQuestionIndex,
+    answers,
+  ]);
 
   const getErrorMessage = (errorKey: string) => {
     switch (errorKey) {
