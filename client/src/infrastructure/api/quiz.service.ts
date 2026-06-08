@@ -1,5 +1,15 @@
 import { QuizSubmissionPayload } from "../validations/quiz.schema";
 
+export class ApiSubmissionError extends Error {
+  constructor(
+    public code: string,
+    public statusCode: number
+  ) {
+    super(`API Error: ${code}`);
+    this.name = "ApiSubmissionError";
+  }
+}
+
 interface QuizLeadProvider {
   submit(
     payload: QuizSubmissionPayload,
@@ -8,7 +18,6 @@ interface QuizLeadProvider {
   ): Promise<void>;
 }
 
-// Strategy A: Custom Backend (Express/Node)
 const ApiProvider: QuizLeadProvider = {
   async submit(payload, score, profile) {
     const endpoint =
@@ -21,17 +30,29 @@ const ApiProvider: QuizLeadProvider = {
     });
 
     if (!response.ok) {
-      throw new Error("ApiProvider: Failed to submit lead");
+      let errorCode = "SubmissionError";
+
+      try {
+        const errorData = (await response.json()) as { error?: string };
+        if (errorData.error) {
+          errorCode = errorData.error;
+        }
+      } catch {
+        console.error("Failed to parse API error response");
+      }
+
+      throw new ApiSubmissionError(errorCode, response.status);
     }
   },
 };
 
-// Strategy B: Webhook (n8n, Make, Zapier)
 const WebhookProvider: QuizLeadProvider = {
   async submit(payload, score, profile) {
     const webhookUrl = import.meta.env.VITE_WEBHOOK_URL;
 
-    if (!webhookUrl) throw new Error("Webhook URL is not defined");
+    if (!webhookUrl) {
+      throw new Error("Webhook URL is missing from environment variables");
+    }
 
     const response = await fetch(webhookUrl, {
       method: "POST",
@@ -40,12 +61,11 @@ const WebhookProvider: QuizLeadProvider = {
     });
 
     if (!response.ok) {
-      throw new Error("WebhookProvider: Failed to submit lead");
+      throw new ApiSubmissionError("WebhookSubmissionFailed", response.status);
     }
   },
 };
 
-// Orchestrator
 export const submitQuizLead = async (
   payload: QuizSubmissionPayload,
   score: number,
@@ -53,7 +73,7 @@ export const submitQuizLead = async (
 ): Promise<void> => {
   const strategy = import.meta.env.VITE_SUBMISSION_STRATEGY || "API";
 
-  console.log(`Initiating lead submission using ${strategy} strategy`);
+  console.log(`Executing lead submission with ${strategy} strategy`);
 
   if (strategy === "WEBHOOK") {
     await WebhookProvider.submit(payload, score, profile);

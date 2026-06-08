@@ -14,7 +14,7 @@ import {
 } from "@/domain/quiz/data";
 import { quizSubmissionSchema } from "@/infrastructure/validations/quiz.schema";
 import { useQuizStore } from "@/app/store/quiz.store";
-import { z, ZodError } from "zod";
+import { ZodError } from "zod";
 
 export default function Home() {
   const currentQuestionIndex = useQuizStore(
@@ -33,8 +33,6 @@ export default function Home() {
   const finishQuiz = useQuizStore(state => state.finishQuiz);
 
   const [stepError, setStepError] = useState<string | null>(null);
-
-  // State for UI transition (Hero -> Quiz)
   const [hasStarted, setHasStarted] = useState<boolean>(false);
 
   const currentQuestion = QUIZ_QUESTIONS[currentQuestionIndex];
@@ -67,6 +65,7 @@ export default function Home() {
     if (currentQuestionIndex < QUIZ_QUESTIONS.length - 1) {
       nextQuestion();
     } else {
+      console.info("Dispatching final quiz submission");
       await finishQuiz(SCORING_RULES);
     }
   };
@@ -78,6 +77,19 @@ export default function Home() {
       (Array.isArray(answers[currentQuestion.id])
         ? answers[currentQuestion.id].length > 0
         : true));
+
+  const getErrorMessage = (errorKey: string) => {
+    switch (errorKey) {
+      case "EmailAlreadyExists":
+        return "Este e-mail já realizou o mapeamento. Por favor, tente com outro endereço.";
+      case "ValidationFailed":
+        return "Verifique se todos os campos estão preenchidos corretamente.";
+      case "WebhookSubmissionFailed":
+      case "InternalClientError":
+      default:
+        return "Ocorreu um erro de comunicação com os servidores. Tente novamente.";
+    }
+  };
 
   if (isFinished && score !== null && profile !== null) {
     const categoryDisplay = getCategoryDisplayData(profile);
@@ -191,7 +203,7 @@ export default function Home() {
                         >
                           <AlertCircle className="w-5 h-5 shrink-0" />
                           <p className="text-sm font-medium">
-                            Ocorreu um erro ao enviar os dados. Tente novamente.
+                            {getErrorMessage(submitError)}
                           </p>
                         </motion.div>
                       )}
