@@ -2,11 +2,7 @@ import {
   calculateConsultingScore,
   determineProfile,
 } from "@/domain/quiz/scoring.service";
-import {
-  QuizAnswers,
-  ProfileCategory,
-  ScoringRules,
-} from "@/domain/quiz/types";
+import { QuizAnswers, ProfileCode, ScoringRules } from "@/domain/quiz/types";
 import {
   submitQuizLead,
   ApiSubmissionError,
@@ -22,7 +18,7 @@ interface QuizState {
   isSubmitting: boolean;
   submitError: string | null;
   score: number | null;
-  profile: ProfileCategory | null;
+  profile: ProfileCode | null;
   setAnswer: (questionId: string, answer: string | string[]) => void;
   nextQuestion: () => void;
   previousQuestion: () => void;
@@ -74,7 +70,7 @@ export const useQuizStore = create<QuizState>()(
         }
 
         const score = calculateConsultingScore(answers, rules);
-        const profile = determineProfile(score);
+        const profile = determineProfile(answers);
 
         try {
           await submitQuizLead(validationResult.data, score, profile);

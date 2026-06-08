@@ -1,4 +1,4 @@
-import { QuizAnswers, ScoringRules, ProfileCategory } from "./types";
+import { QuizAnswers, ScoringRules, ProfileCode } from "./types";
 
 export const calculateConsultingScore = (
   answers: QuizAnswers,
@@ -39,10 +39,27 @@ export const calculateConsultingScore = (
   return normalizedScore;
 };
 
-export const determineProfile = (score: number): ProfileCategory => {
-  if (score <= 30) return "Especialista em Cargo CLT";
-  if (score <= 50) return "Especialista em Transição";
-  if (score <= 70) return "Consultor Iniciante";
+/**
+ * Classifica o lead em um dos três perfis da audiência MAPE (A/B/C).
+ *
+ * Diferente do score (0–100, que mede maturidade), o perfil é qualitativo e
+ * baseado no MOMENTO de carreira — é o que define qual cadência de e-mail e
+ * WhatsApp o lead deve receber. A lógica espelha o `calcPerfil` da pesquisa
+ * original, traduzida para os valores de opção do app:
+ *
+ * - A (Indeciso Estratégico): ainda no corporativo ou saiu há menos de 6 meses.
+ * - B (Consultor Iniciante): já iniciou e tem alguns clientes, ou atua há mais
+ *   de 18 meses mas com recorrência ainda irregular.
+ * - C (Frustrado Recente): já tentou e busca reorganizar o que existe.
+ */
+export const determineProfile = (answers: QuizAnswers): ProfileCode => {
+  const moment = answers.moment;
+  const clients = answers.clients;
 
-  return "Consultor Estruturado";
+  if (moment === "considering" || moment === "transitioning") return "A";
+
+  if (moment === "started" || (moment === "established" && clients === "irregular"))
+    return "B";
+
+  return "C";
 };
