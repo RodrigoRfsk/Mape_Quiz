@@ -119,10 +119,6 @@ export default function Home() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="relative flex-1"
           >
-            <div className="absolute inset-0 opacity-5">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary via-secondary to-accent" />
-            </div>
-
             <div className="relative container py-12 md:py-20">
               <motion.div
                 className="mb-12"
@@ -157,7 +153,7 @@ export default function Home() {
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <Card className="border-2 border-border bg-card/50 backdrop-blur-sm p-8 md:p-12 neo-card shadow-lg">
+                  <Card className="border-2 border-border bg-card p-8 md:p-12 neo-card shadow-lg">
                     <div className="max-w-2xl">
                       <motion.div
                         initial={{ opacity: 0 }}
@@ -224,7 +220,7 @@ export default function Home() {
                     previousQuestion();
                   }}
                   disabled={currentQuestionIndex === 0 || isSubmitting}
-                  className="px-6 py-2 border-2 border-border hover:bg-card/50"
+                  className="px-6 py-2 border-2 border-border hover:bg-muted"
                 >
                   ← Anterior
                 </Button>
