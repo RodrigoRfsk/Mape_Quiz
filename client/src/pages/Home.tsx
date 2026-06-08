@@ -1,8 +1,14 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ChevronRight, CheckCircle2, Loader2, AlertCircle } from "lucide-react";
+import {
+  ChevronRight,
+  CheckCircle2,
+  Loader2,
+  AlertCircle,
+  Cpu,
+} from "lucide-react";
 import QuizHero from "@/components/QuizHero";
 import QuizQuestion from "@/components/QuizQuestion";
 import QuizResults from "@/components/QuizResults";
@@ -35,12 +41,43 @@ export default function Home() {
   const [stepError, setStepError] = useState<string | null>(null);
   const [hasStarted, setHasStarted] = useState<boolean>(false);
 
+  const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
+  const [analysisText, setAnalysisText] = useState<string>("");
+  const analysisTimers = useRef<NodeJS.Timeout[]>([]);
+
   const currentQuestion = QUIZ_QUESTIONS[currentQuestionIndex];
   const progress = ((currentQuestionIndex + 1) / QUIZ_QUESTIONS.length) * 100;
 
   const handleAnswer = (value: string | string[]) => {
     setAnswer(currentQuestion.id, value);
     if (stepError) setStepError(null);
+  };
+
+  const triggerAiAnalysis = () => {
+    setIsAnalyzing(true);
+
+    analysisTimers.current.forEach(clearTimeout);
+    analysisTimers.current = [];
+
+    const t1 = setTimeout(
+      () => setAnalysisText("Processando padrões de comportamento..."),
+      0
+    );
+    const t2 = setTimeout(
+      () => setAnalysisText("Cruzando dados com métricas de mercado..."),
+      1200
+    );
+    const t3 = setTimeout(
+      () => setAnalysisText("Calibrando modelo preditivo..."),
+      2400
+    );
+
+    const tFinal = setTimeout(() => {
+      setIsAnalyzing(false);
+      nextQuestion();
+    }, 3500);
+
+    analysisTimers.current = [t1, t2, t3, tFinal];
   };
 
   const handleNext = async () => {
@@ -63,7 +100,11 @@ export default function Home() {
     setStepError(null);
 
     if (currentQuestionIndex < QUIZ_QUESTIONS.length - 1) {
-      nextQuestion();
+      if (currentQuestionIndex === 3 || currentQuestionIndex === 8) {
+        triggerAiAnalysis();
+      } else {
+        nextQuestion();
+      }
     } else {
       console.info("Dispatching final quiz submission");
       await finishQuiz(SCORING_RULES);
@@ -99,7 +140,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col">
+    <div className="min-h-screen bg-background text-foreground flex flex-col overflow-hidden">
       <AnimatePresence mode="wait">
         {!hasStarted ? (
           <motion.div
@@ -146,125 +187,154 @@ export default function Home() {
               </motion.div>
 
               <AnimatePresence mode="wait">
-                <motion.div
-                  key={currentQuestionIndex}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <Card className="border-2 border-border bg-card p-8 md:p-12 neo-card shadow-lg">
-                    <div className="max-w-2xl">
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.1 }}
-                      >
-                        <h2 className="neo-display text-3xl md:text-4xl mb-2 text-foreground">
-                          {currentQuestion.question}
-                        </h2>
-                        {currentQuestion.subtext && (
-                          <p className="text-sm text-muted-foreground mb-6">
-                            {currentQuestion.subtext}
-                          </p>
-                        )}
-                      </motion.div>
-
-                      <QuizQuestion
-                        question={currentQuestion}
-                        answer={answers[currentQuestion.id]}
-                        onAnswer={handleAnswer}
-                        maxCheckboxes={2}
-                      />
+                {isAnalyzing ? (
+                  <motion.div
+                    key="analyzing-view"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 1.05 }}
+                    transition={{ duration: 0.4 }}
+                    className="flex flex-col items-center justify-center min-h-[400px] border-2 border-border bg-card p-8 md:p-12 neo-card shadow-lg rounded-xl"
+                  >
+                    <div className="relative mb-8">
+                      <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse" />
+                      <Cpu className="w-16 h-16 text-primary relative z-10 animate-pulse" />
+                      <Loader2 className="w-24 h-24 text-primary/30 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-spin" />
                     </div>
 
-                    {stepError && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        className="mt-6 p-4 bg-destructive/10 border border-destructive rounded-md flex items-center gap-3 text-destructive"
-                      >
-                        <AlertCircle className="w-5 h-5 shrink-0" />
-                        <p className="text-sm font-medium">{stepError}</p>
-                      </motion.div>
-                    )}
+                    <h3 className="neo-display text-2xl md:text-3xl mb-4 text-foreground">
+                      Análise em Tempo Real
+                    </h3>
+                    <p className="text-muted-foreground font-mono text-sm animate-pulse h-6">
+                      {analysisText}
+                    </p>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key={currentQuestionIndex}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <Card className="border-2 border-border bg-card p-8 md:p-12 neo-card shadow-lg">
+                      <div className="max-w-2xl">
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 0.1 }}
+                        >
+                          <h2 className="neo-display text-3xl md:text-4xl mb-2 text-foreground">
+                            {currentQuestion.question}
+                          </h2>
+                          {currentQuestion.subtext && (
+                            <p className="text-sm text-muted-foreground mb-6">
+                              {currentQuestion.subtext}
+                            </p>
+                          )}
+                        </motion.div>
 
-                    {submitError &&
-                      currentQuestionIndex === QUIZ_QUESTIONS.length - 1 &&
-                      !stepError && (
+                        <QuizQuestion
+                          question={currentQuestion}
+                          answer={answers[currentQuestion.id]}
+                          onAnswer={handleAnswer}
+                          maxCheckboxes={2}
+                        />
+                      </div>
+
+                      {stepError && (
                         <motion.div
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: "auto" }}
                           className="mt-6 p-4 bg-destructive/10 border border-destructive rounded-md flex items-center gap-3 text-destructive"
                         >
                           <AlertCircle className="w-5 h-5 shrink-0" />
-                          <p className="text-sm font-medium">
-                            {getErrorMessage(submitError)}
-                          </p>
+                          <p className="text-sm font-medium">{stepError}</p>
                         </motion.div>
                       )}
-                  </Card>
-                </motion.div>
+
+                      {submitError &&
+                        currentQuestionIndex === QUIZ_QUESTIONS.length - 1 &&
+                        !stepError && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            className="mt-6 p-4 bg-destructive/10 border border-destructive rounded-md flex items-center gap-3 text-destructive"
+                          >
+                            <AlertCircle className="w-5 h-5 shrink-0" />
+                            <p className="text-sm font-medium">
+                              {getErrorMessage(submitError)}
+                            </p>
+                          </motion.div>
+                        )}
+                    </Card>
+                  </motion.div>
+                )}
               </AnimatePresence>
 
-              <motion.div
-                className="flex gap-4 mt-8 justify-between"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
-              >
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setStepError(null);
-                    previousQuestion();
-                  }}
-                  disabled={currentQuestionIndex === 0 || isSubmitting}
-                  className="px-6 py-2 border-2 border-border hover:bg-muted"
+              {!isAnalyzing && (
+                <motion.div
+                  className="flex gap-4 mt-8 justify-between"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
                 >
-                  ← Anterior
-                </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setStepError(null);
+                      previousQuestion();
+                    }}
+                    disabled={currentQuestionIndex === 0 || isSubmitting}
+                    className="px-6 py-2 border-2 border-border hover:bg-muted"
+                  >
+                    ← Anterior
+                  </Button>
 
-                <Button
-                  onClick={handleNext}
-                  disabled={!isAnswered || isSubmitting}
-                  className="px-8 py-2 bg-primary text-primary-foreground hover:bg-primary/90 border-2 border-primary font-bold flex items-center gap-2 group min-w-[140px] justify-center"
+                  <Button
+                    onClick={handleNext}
+                    disabled={!isAnswered || isSubmitting}
+                    className="px-8 py-2 bg-primary text-primary-foreground hover:bg-primary/90 border-2 border-primary font-bold flex items-center gap-2 group min-w-[140px] justify-center"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />A
+                        processar...
+                      </>
+                    ) : currentQuestionIndex === QUIZ_QUESTIONS.length - 1 ? (
+                      <>
+                        <CheckCircle2 className="w-4 h-4" />
+                        Finalizar
+                      </>
+                    ) : (
+                      <>
+                        Próxima
+                        <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      </>
+                    )}
+                  </Button>
+                </motion.div>
+              )}
+
+              {!isAnalyzing && (
+                <motion.div
+                  className="mt-8 flex gap-2 justify-center"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.4 }}
                 >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />A processar...
-                    </>
-                  ) : currentQuestionIndex === QUIZ_QUESTIONS.length - 1 ? (
-                    <>
-                      <CheckCircle2 className="w-4 h-4" />
-                      Finalizar
-                    </>
-                  ) : (
-                    <>
-                      Próxima
-                      <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    </>
-                  )}
-                </Button>
-              </motion.div>
-
-              <motion.div
-                className="mt-8 flex gap-2 justify-center"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
-              >
-                {[1, 2, 3, 4].map(block => (
-                  <div
-                    key={block}
-                    className={`h-2 rounded-full transition-all ${
-                      currentQuestion.block >= block
-                        ? "bg-primary w-8"
-                        : "bg-border w-2"
-                    }`}
-                  />
-                ))}
-              </motion.div>
+                  {[1, 2, 3, 4].map(block => (
+                    <div
+                      key={block}
+                      className={`h-2 rounded-full transition-all ${
+                        currentQuestion.block >= block
+                          ? "bg-primary w-8"
+                          : "bg-border w-2"
+                      }`}
+                    />
+                  ))}
+                </motion.div>
+              )}
             </div>
           </motion.div>
         )}
