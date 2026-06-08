@@ -19,6 +19,7 @@ interface QuizResultsProps {
     color: string;
     icon: string;
   };
+  onRestart: () => void;
 }
 
 export default function QuizResults({
@@ -26,6 +27,7 @@ export default function QuizResults({
   score,
   profile,
   category,
+  onRestart,
 }: QuizResultsProps) {
   const rawName = (answers.name as string) || "";
   const firstName = rawName.trim()
@@ -252,6 +254,16 @@ export default function QuizResults({
               className="bg-primary text-primary-foreground hover:bg-primary/90 border-2 border-primary font-bold px-10 py-6 text-lg w-full sm:w-auto"
             >
               Quero Reservar Minha Vaga
+            </Button>
+          </motion.div>
+
+          <motion.div variants={itemVariants} className="text-center">
+            <Button
+              onClick={onRestart}
+              variant="outline"
+              className="border-2 border-border hover:bg-muted px-8 py-5 text-base w-full sm:w-auto"
+            >
+              Refazer diagnóstico
             </Button>
           </motion.div>
         </motion.div>
