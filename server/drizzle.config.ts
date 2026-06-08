@@ -6,15 +6,19 @@ import dotenv from "dotenv";
 // repo, então resolvemos o caminho relativo ao cwd (raiz) -> server/.env.
 dotenv.config({ path: path.resolve(process.cwd(), "server/.env"), quiet: true });
 
+const url = process.env.DATABASE_URL;
+
+if (!url) {
+  throw new Error(
+    "DATABASE_URL não está definida. Configure server/.env (veja server/.env.example)."
+  );
+}
+
 export default defineConfig({
   schema: "./server/src/db/schema.ts",
   out: "./server/drizzle",
   dialect: "postgresql",
-  dbCredentials: {
-    url:
-      process.env.DATABASE_URL ||
-      "postgres://admin:Jfafcuxnd29@localhost:5432/mape_quiz",
-  },
+  dbCredentials: { url },
   verbose: true,
   strict: true,
 });

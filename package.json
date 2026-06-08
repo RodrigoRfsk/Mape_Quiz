@@ -7,7 +7,11 @@
     "dev:client": "vite --host",
     "dev:server": "tsx watch server/index.ts",
     "build": "vite build",
-    "db:push": "drizzle-kit push --config=server/drizzle.config.ts"
+    "db:push": "drizzle-kit push --config=server/drizzle.config.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
