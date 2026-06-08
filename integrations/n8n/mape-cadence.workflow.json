@@ -1,0 +1,301 @@
+{
+  "name": "MAPE — Cadência por Perfil (A/B/C)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "mape-lead",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "webhook-mape-lead",
+      "name": "Webhook (lead do MAPE)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 600],
+      "webhookId": "mape-lead"
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            { "name": "email", "value": "={{ $json.body.email }}" },
+            { "name": "name", "value": "={{ $json.body.name }}" },
+            { "name": "firstName", "value": "={{ ($json.body.name || '').trim().split(' ')[0] }}" },
+            { "name": "profile", "value": "={{ ($json.body.profile || '').toUpperCase() }}" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "normaliza-lead",
+      "name": "Normalizar Lead",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [460, 600]
+    },
+    {
+      "parameters": {
+        "fromEmail": "contato@SEU_DOMINIO.com",
+        "toEmail": "sdr@SEU_DOMINIO.com",
+        "subject": "=Novo lead MAPE — Perfil {{ $('Normalizar Lead').item.json.profile }} — {{ $('Normalizar Lead').item.json.name }}",
+        "emailFormat": "text",
+        "text": "=Novo lead capturado pelo diagnóstico.\n\nNome: {{ $('Normalizar Lead').item.json.name }}\nE-mail: {{ $('Normalizar Lead').item.json.email }}\nPerfil: {{ $('Normalizar Lead').item.json.profile }}\n\nAbra a cadência de WhatsApp/SDR correspondente ao Perfil {{ $('Normalizar Lead').item.json.profile }} em integrations/n8n/whatsapp-sdr-scripts.md (MSG 01 = abertura).\n\nO drip de e-mails já está sendo disparado automaticamente por este fluxo.",
+        "options": {}
+      },
+      "id": "notifica-sdr",
+      "name": "Notificar SDR (abertura WhatsApp)",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [680, 840]
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{ $('Normalizar Lead').item.json.profile }}",
+        "rules": {
+          "rules": [
+            { "operation": "equal", "value2": "A", "output": 0 },
+            { "operation": "equal", "value2": "B", "output": 1 },
+            { "operation": "equal", "value2": "C", "output": 2 }
+          ]
+        },
+        "fallbackOutput": 3
+      },
+      "id": "roteia-perfil",
+      "name": "Roteia por Perfil (A/B/C)",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [680, 600]
+    },
+
+    {
+      "parameters": {
+        "fromEmail": "contato@SEU_DOMINIO.com",
+        "toEmail": "={{ $('Normalizar Lead').item.json.email }}",
+        "subject": "Você tem anos de trajetória. E ainda assim não sabe exatamente como transformar isso em consultoria.",
+        "emailFormat": "text",
+        "text": "=Olá, {{ $('Normalizar Lead').item.json.firstName }}.\n\nProvavelmente você já percebeu isso. Com o tempo, a questão deixa de ser saber se você tem experiência suficiente para atuar como consultor. A questão passa a ser outra — mais específica e mais incômoda: como transformar essa experiência em algo que o mercado consiga entender, comparar e contratar.\n\nPorque o mercado não compra trajetória. Ele compra clareza. E essa clareza raramente surge sozinha. Ela precisa de estrutura:\n\n- como nomear e organizar o que você sabe fazer de forma que o outro entenda imediatamente\n- como posicionar anos de carreira executiva como uma oferta de alto valor\n- como chegar nos primeiros projetos sem depender exclusivamente da rede que você já tem\n- como precificar de um jeito que faça sentido para o que você realmente entrega\n\nNa prática, o que trava a transição raramente é falta de competência. É a ausência de um método que organize o ponto de partida.\n\nFoi exatamente para resolver esse ponto de partida que o MAPE foi desenvolvido. O Fábio apresenta como esse método funciona em um Encontro Aberto — ao vivo, sem custo, sem compromisso.\n\nPara receber o acesso, responda com a palavra ENCONTRO.",
+        "options": {}
+      },
+      "id": "email-a1",
+      "name": "A · E-mail 01",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [920, 300]
+    },
+    {
+      "parameters": { "unit": "days", "amount": 2 },
+      "id": "wait-a1",
+      "name": "A · Espera 2d",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [1140, 300],
+      "webhookId": "wait-a1"
+    },
+    {
+      "parameters": {
+        "fromEmail": "contato@SEU_DOMINIO.com",
+        "toEmail": "={{ $('Normalizar Lead').item.json.email }}",
+        "subject": "O mercado não reconhece expertise que ele não consegue ler.",
+        "emailFormat": "text",
+        "text": "=Olá, {{ $('Normalizar Lead').item.json.firstName }}.\n\nExiste uma crença comum entre profissionais experientes que consideram a consultoria: a de que o mercado perceberá naturalmente a profundidade de quem tem muito a oferecer. Na prática, não é assim que funciona.\n\nO mercado não avalia conhecimento. Ele avalia o que consegue enxergar com clareza. E sem uma estrutura que traduza anos de trajetória em proposta legível, mesmo profissionais com repertório extraordinário acabam sendo percebidos como mais um especialista disponível no mercado.\n\nO resultado:\n- projetos que chegam por acaso, não por método\n- honorários que ficam abaixo do que a expertise justificaria\n- uma sensação persistente de que o mercado não está enxergando o que você realmente entrega\n\nNão é falta de competência. É ausência de uma estrutura que faça o mercado perceber o que existe ali antes mesmo de uma conversa. Construir essa estrutura antes de entrar — não depois de meses tentando — é o que define como começa a transição.\n\nSe fizer sentido entender como isso funciona na prática, o Fábio apresenta o processo completo no Encontro Aberto.\n\nPara receber o acesso, responda com a palavra ENCONTRO.",
+        "options": {}
+      },
+      "id": "email-a2",
+      "name": "A · E-mail 02",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1360, 300]
+    },
+    {
+      "parameters": { "unit": "days", "amount": 3 },
+      "id": "wait-a2",
+      "name": "A · Espera 3d",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [1580, 300],
+      "webhookId": "wait-a2"
+    },
+    {
+      "parameters": {
+        "fromEmail": "contato@SEU_DOMINIO.com",
+        "toEmail": "={{ $('Normalizar Lead').item.json.email }}",
+        "subject": "Antes de sair, vale entender o caminho.",
+        "emailFormat": "text",
+        "text": "=Olá, {{ $('Normalizar Lead').item.json.firstName }}.\n\nExiste um perfil que chega até o MAPE com frequência. São profissionais que têm experiência consolidada em área estratégica, já entregaram resultado relevante ao longo da carreira e percebem que têm repertório suficiente para atuar de forma independente — mas ainda não deram o passo. E não é por falta de vontade.\n\nO que trava, quase sempre, é a ausência de um modelo claro de como fazer isso funcionar desde o início. Como estruturar a oferta. Como precificar. Como posicionar a trajetória. Como chegar nos primeiros projetos sem depender apenas de quem já te conhece.\n\nO Fábio chegou a esse método pelo único caminho que valida qualquer metodologia: construiu, escalou e vendeu duas empresas de consultoria antes de criar o MAPE. 25 anos de campo — não de estudo do campo.\n\nPor isso ele realiza periodicamente um Encontro Aberto — uma conversa ao vivo onde apresenta exatamente como esse processo funciona. Ao final, você tem clareza sobre o seu ponto de partida específico — independentemente de qualquer decisão sobre avançar.\n\nPara receber o acesso, responda com a palavra ENCONTRO.",
+        "options": {}
+      },
+      "id": "email-a3",
+      "name": "A · E-mail 03",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1800, 300]
+    },
+
+    {
+      "parameters": {
+        "fromEmail": "contato@SEU_DOMINIO.com",
+        "toEmail": "={{ $('Normalizar Lead').item.json.email }}",
+        "subject": "Em algum momento, os primeiros clientes param de chegar sozinhos.",
+        "emailFormat": "text",
+        "text": "=Olá, {{ $('Normalizar Lead').item.json.firstName }}.\n\nProvavelmente você já percebeu isso ao longo dos primeiros meses de consultoria. No início, a rede existente sustenta. Os primeiros projetos chegam por indicação, por relacionamento construído ao longo dos anos.\n\nMas existe um momento em que esse modelo começa a mostrar seus limites. O que começa a travar o crescimento raramente é falta de capacidade técnica. É a ausência de estrutura para ir além do que já existe:\n\n- como chegar em clientes que ainda não te conhecem\n- como posicionar a oferta de um jeito que justifique honorários mais compatíveis com a expertise\n- como criar consistência — projetos que chegam por método, não por acaso\n- como escalar sem que tudo dependa da sua presença direta\n\nNa prática, o desafio deixa de ser entregar. Passa a ser estruturar como crescer. Foi exatamente para esse momento de transição que o MAPE foi desenvolvido.\n\nO Fábio apresenta como esse processo funciona no Encontro Aberto — ao vivo, sem custo.\n\nPara receber o acesso, responda com a palavra ENCONTRO.",
+        "options": {}
+      },
+      "id": "email-b1",
+      "name": "B · E-mail 01",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [920, 600]
+    },
+    {
+      "parameters": { "unit": "days", "amount": 2 },
+      "id": "wait-b1",
+      "name": "B · Espera 2d",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [1140, 600],
+      "webhookId": "wait-b1"
+    },
+    {
+      "parameters": {
+        "fromEmail": "contato@SEU_DOMINIO.com",
+        "toEmail": "={{ $('Normalizar Lead').item.json.email }}",
+        "subject": "O mercado raramente reconhece profundidade sem posicionamento claro.",
+        "emailFormat": "text",
+        "text": "=Olá, {{ $('Normalizar Lead').item.json.firstName }}.\n\nConsultores nos primeiros anos de operação normalmente acreditam que o mercado vai perceber naturalmente a profundidade técnica, os anos de experiência acumulada e a capacidade real de entregar resultado. Mas mercados não funcionam assim.\n\nSem posicionamento estruturado, mesmo profissionais com repertório sólido acabam gerando:\n- percepção genérica — sem diferenciação clara em relação à concorrência\n- honorários abaixo do que a expertise justificaria\n- aquisição inconsistente — muito dependente de indicação e momento\n- dificuldade de crescer além do nível atual de operação\n\nPorque o mercado não remunera apenas competência. Ele remunera a clareza com que essa competência se traduz em resultado percebido antes mesmo da contratação. É exatamente aqui que estrutura estratégica se torna mais importante do que conhecimento técnico adicional.\n\nCaso queira entender como construir essa estrutura de forma prática, o Fábio apresenta o processo no Encontro Aberto.\n\nPara receber o acesso, responda com a palavra ENCONTRO.",
+        "options": {}
+      },
+      "id": "email-b2",
+      "name": "B · E-mail 02",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1360, 600]
+    },
+    {
+      "parameters": { "unit": "days", "amount": 3 },
+      "id": "wait-b2",
+      "name": "B · Espera 3d",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [1580, 600],
+      "webhookId": "wait-b2"
+    },
+    {
+      "parameters": {
+        "fromEmail": "contato@SEU_DOMINIO.com",
+        "toEmail": "={{ $('Normalizar Lead').item.json.email }}",
+        "subject": "Talvez faça sentido estruturar o que você já começou.",
+        "emailFormat": "text",
+        "text": "=Olá, {{ $('Normalizar Lead').item.json.firstName }}.\n\nPelo perfil dos profissionais que chegam ao MAPE nos primeiros anos de consultoria, existe um padrão bastante claro. São especialistas que já saíram do corporativo e deram os primeiros passos, têm capacidade técnica sólida e entregam resultado real, conquistaram os primeiros clientes — em geral por indicação — mas percebem que a operação ainda não atingiu a consistência esperada.\n\nE normalmente o que falta não é mais conhecimento técnico. É uma arquitetura estratégica que organize o que já existe:\n- posicionamento claro que diferencia e justifica o preço\n- modelo de aquisição que vai além da rede existente\n- estrutura de proposta que o cliente consegue entender e comparar\n- previsibilidade — projetos que chegam por processo, não pelo acaso de quem você conhece\n\nO Fábio construiu e vendeu duas empresas de consultoria antes de criar o MAPE — 25 anos de campo, não de estudo do campo. Por isso realiza periodicamente um Encontro Aberto, onde apresenta como essa reorganização funciona na prática. Ao final, você tem clareza sobre o que está faltando para ganhar consistência.\n\nPara receber o acesso, responda com a palavra ENCONTRO.",
+        "options": {}
+      },
+      "id": "email-b3",
+      "name": "B · E-mail 03",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1800, 600]
+    },
+
+    {
+      "parameters": {
+        "fromEmail": "contato@SEU_DOMINIO.com",
+        "toEmail": "={{ $('Normalizar Lead').item.json.email }}",
+        "subject": "Tentar sem método não é fracasso. É ausência de estrutura.",
+        "emailFormat": "text",
+        "text": "=Olá, {{ $('Normalizar Lead').item.json.firstName }}.\n\nQuem chegou até aqui muito provavelmente já deu passos concretos em direção à consultoria. Saiu do corporativo. Conseguiu alguns clientes. Testou abordagens. E mesmo assim — algo não fechou do jeito que deveria.\n\nNão por falta de capacidade. Não por falta de esforço. Mas porque existe algo que a maioria descobre da forma mais cara possível: consultoria de alto valor não se constrói por tentativa e erro. Ela se constrói com estrutura.\n\nO que costuma faltar não é mais experiência. É uma arquitetura que organize o que você já tem:\n- clareza de oferta — o mercado precisa entender exatamente o que você resolve\n- posicionamento que diferencie — não apenas apresente\n- modelo de entrada que não dependa só de quem já te conhece\n- precificação compatível com o nível do que você realmente entrega\n\nFoi exatamente para reorganizar esse ponto — com método, não com mais tentativas — que o MAPE foi desenvolvido.\n\nO Fábio apresenta como esse processo funciona no Encontro Aberto — ao vivo, sem custo.\n\nPara receber o acesso, responda com a palavra ENCONTRO.",
+        "options": {}
+      },
+      "id": "email-c1",
+      "name": "C · E-mail 01",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [920, 900]
+    },
+    {
+      "parameters": { "unit": "days", "amount": 2 },
+      "id": "wait-c1",
+      "name": "C · Espera 2d",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [1140, 900],
+      "webhookId": "wait-c1"
+    },
+    {
+      "parameters": {
+        "fromEmail": "contato@SEU_DOMINIO.com",
+        "toEmail": "={{ $('Normalizar Lead').item.json.email }}",
+        "subject": "Trabalhar muito não é o mesmo que trabalhar com método.",
+        "emailFormat": "text",
+        "text": "=Olá, {{ $('Normalizar Lead').item.json.firstName }}.\n\nQuem já tentou construir uma consultoria de forma independente sabe que não falta disposição nem capacidade técnica. O que falta, na maioria das vezes, é que o mercado consiga perceber o que está sendo oferecido com clareza suficiente para contratar.\n\nSem estrutura estratégica — mesmo com muito esforço — os resultados tendem a seguir um padrão:\n- clientes chegam por indicação, mas sem regularidade\n- propostas são enviadas, mas a taxa de fechamento é inconsistente\n- o valor cobrado fica abaixo do que a expertise justificaria\n- a sensação de que você está trabalhando mais do que o retorno\n\nO problema não está no quanto você sabe. Está em como o mercado consegue ler o que você oferece. E reorganizar esse ponto — com método, não com mais tentativas — é exatamente o que muda o padrão. Foi assim que o Fábio construiu e vendeu duas consultorias antes de criar o MAPE.\n\nSe fizer sentido entender como funciona essa reorganização, o Fábio apresenta o processo no Encontro Aberto.\n\nPara receber o acesso, responda com a palavra ENCONTRO.",
+        "options": {}
+      },
+      "id": "email-c2",
+      "name": "C · E-mail 02",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1360, 900]
+    },
+    {
+      "parameters": { "unit": "days", "amount": 3 },
+      "id": "wait-c2",
+      "name": "C · Espera 3d",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [1580, 900],
+      "webhookId": "wait-c2"
+    },
+    {
+      "parameters": {
+        "fromEmail": "contato@SEU_DOMINIO.com",
+        "toEmail": "={{ $('Normalizar Lead').item.json.email }}",
+        "subject": "Não é começar do zero. É colocar estrutura no que já existe.",
+        "emailFormat": "text",
+        "text": "=Olá, {{ $('Normalizar Lead').item.json.firstName }}.\n\nExiste um perfil específico que chega ao MAPE depois de já ter dado os primeiros passos na consultoria. São profissionais que já saíram do corporativo e testaram o mercado, conquistaram alguns clientes — mas sem a consistência esperada — e perceberam que algo não está funcionando do jeito que deveria.\n\nO que normalmente está faltando não é voltar ao ponto de partida. É reorganizar o que já foi construído com uma estrutura estratégica que ainda não estava presente:\n- clareza de oferta — o que você resolve, para quem e por que vale o que vale\n- posicionamento que cria percepção de valor antes da contratação\n- processo de aquisição que não depende exclusivamente de quem já te conhece\n- previsibilidade — projetos que chegam com consistência, não por acaso\n\nO Fábio construiu e vendeu duas empresas de consultoria antes de criar o MAPE — 25 anos de campo, não de estudo do campo. É essa experiência que diferencia o que você vai ouvir no Encontro Aberto. Ao final, você tem clareza sobre o que estava faltando — sem precisar começar do zero.\n\nPara receber o acesso, responda com a palavra ENCONTRO.",
+        "options": {}
+      },
+      "id": "email-c3",
+      "name": "C · E-mail 03",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1800, 900]
+    }
+  ],
+  "connections": {
+    "Webhook (lead do MAPE)": {
+      "main": [[{ "node": "Normalizar Lead", "type": "main", "index": 0 }]]
+    },
+    "Normalizar Lead": {
+      "main": [[
+        { "node": "Roteia por Perfil (A/B/C)", "type": "main", "index": 0 },
+        { "node": "Notificar SDR (abertura WhatsApp)", "type": "main", "index": 0 }
+      ]]
+    },
+    "Roteia por Perfil (A/B/C)": {
+      "main": [
+        [{ "node": "A · E-mail 01", "type": "main", "index": 0 }],
+        [{ "node": "B · E-mail 01", "type": "main", "index": 0 }],
+        [{ "node": "C · E-mail 01", "type": "main", "index": 0 }],
+        []
+      ]
+    },
+    "A · E-mail 01": { "main": [[{ "node": "A · Espera 2d", "type": "main", "index": 0 }]] },
+    "A · Espera 2d": { "main": [[{ "node": "A · E-mail 02", "type": "main", "index": 0 }]] },
+    "A · E-mail 02": { "main": [[{ "node": "A · Espera 3d", "type": "main", "index": 0 }]] },
+    "A · Espera 3d": { "main": [[{ "node": "A · E-mail 03", "type": "main", "index": 0 }]] },
+    "B · E-mail 01": { "main": [[{ "node": "B · Espera 2d", "type": "main", "index": 0 }]] },
+    "B · Espera 2d": { "main": [[{ "node": "B · E-mail 02", "type": "main", "index": 0 }]] },
+    "B · E-mail 02": { "main": [[{ "node": "B · Espera 3d", "type": "main", "index": 0 }]] },
+    "B · Espera 3d": { "main": [[{ "node": "B · E-mail 03", "type": "main", "index": 0 }]] },
+    "C · E-mail 01": { "main": [[{ "node": "C · Espera 2d", "type": "main", "index": 0 }]] },
+    "C · Espera 2d": { "main": [[{ "node": "C · E-mail 02", "type": "main", "index": 0 }]] },
+    "C · E-mail 02": { "main": [[{ "node": "C · Espera 3d", "type": "main", "index": 0 }]] },
+    "C · Espera 3d": { "main": [[{ "node": "C · E-mail 03", "type": "main", "index": 0 }]] }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": false
+  }
+}
