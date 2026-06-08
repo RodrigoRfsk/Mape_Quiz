@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { CheckCircle2, Award, Zap, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
-import { QuizAnswers, ProfileCategory } from "@/domain/quiz/types";
+import { QuizAnswers, ProfileCode } from "@/domain/quiz/types";
 import {
   getRecommendationsForProfile,
   getAnswerLabel,
@@ -12,6 +12,7 @@ import {
 interface QuizResultsProps {
   answers: QuizAnswers;
   score: number;
+  profile: ProfileCode;
   category: {
     label: string;
     description: string;
@@ -23,6 +24,7 @@ interface QuizResultsProps {
 export default function QuizResults({
   answers,
   score,
+  profile,
   category,
 }: QuizResultsProps) {
   const rawName = (answers.name as string) || "";
@@ -36,7 +38,7 @@ export default function QuizResults({
     return text.replace(/\bvocê\b/gi, firstName);
   };
 
-  const isEspecialista = category.label.includes("Especialista");
+  const isPrimaryFocus = profile === "A";
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -59,21 +61,19 @@ export default function QuizResults({
   };
 
   const getCategoryIcon = () => {
-    switch (category.label as ProfileCategory) {
-      case "Especialista em Cargo CLT":
+    switch (profile) {
+      case "A":
         return <Award className="w-16 h-16" />;
-      case "Especialista em Transição":
-        return <TrendingUp className="w-16 h-16" />;
-      case "Consultor Iniciante":
+      case "B":
         return <Zap className="w-16 h-16" />;
+      case "C":
+        return <TrendingUp className="w-16 h-16" />;
       default:
         return <CheckCircle2 className="w-16 h-16" />;
     }
   };
 
-  const recommendations = getRecommendationsForProfile(
-    category.label as ProfileCategory
-  );
+  const recommendations = getRecommendationsForProfile(profile);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -110,14 +110,14 @@ export default function QuizResults({
           <motion.div variants={itemVariants} className="mb-8">
             <Card
               className={`relative overflow-hidden border-2 backdrop-blur-sm p-8 md:p-12 neo-card shadow-lg transition-colors ${
-                isEspecialista
+                isPrimaryFocus
                   ? "border-primary bg-primary/10"
                   : "border-border bg-card/50"
               }`}
             >
               <div
                 className={`absolute -top-24 -right-24 w-48 h-48 rounded-full blur-3xl pointer-events-none ${
-                  isEspecialista ? "bg-primary/20" : "bg-muted/20"
+                  isPrimaryFocus ? "bg-primary/20" : "bg-muted/20"
                 }`}
               />
 
@@ -127,7 +127,7 @@ export default function QuizResults({
                   animate={{ scale: 1 }}
                   transition={{ delay: 0.3, type: "spring" }}
                   className={`text-6xl mb-4 ${
-                    isEspecialista ? "text-primary" : ""
+                    isPrimaryFocus ? "text-primary" : ""
                   }`}
                 >
                   {category.icon}

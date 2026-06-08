@@ -1,6 +1,11 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { useQuizStore } from "./quiz.store";
-import { ScoringRules } from "../../domain/quiz/types";
+import { SCORING_RULES } from "../../domain/quiz/data";
+
+vi.mock("@/infrastructure/api/quiz.service", () => ({
+  submitQuizLead: vi.fn().mockResolvedValue(undefined),
+  ApiSubmissionError: class ApiSubmissionError extends Error {},
+}));
 
 describe("Quiz Store", () => {
   beforeEach(() => {
@@ -44,19 +49,35 @@ describe("Quiz Store", () => {
     expect(useQuizStore.getState().currentQuestionIndex).toBe(0);
   });
 
-  it("should process quiz completion and update score and profile", () => {
+  it("should process quiz completion and emit the audience profile code", async () => {
     const store = useQuizStore.getState();
-    const mockRules: ScoringRules = {
-      q1: { a1: 50 },
+
+    const validAnswers: Record<string, string | string[]> = {
+      name: "Maria Silva",
+      area: "Finanças corporativas",
+      experience: "more-20",
+      moment: "started",
+      "main-question": "Como estruturar minha entrada?",
+      email: "maria@example.com",
+      phone: "(11) 99999-9999",
+      clarity: "partial",
+      sector: "Indústria de médio porte",
+      clients: "pontual",
+      "expected-result": "structure",
+      timeline: "3m",
     };
 
-    store.setAnswer("q1", "a1");
-    store.finishQuiz(mockRules);
+    Object.entries(validAnswers).forEach(([id, value]) =>
+      store.setAnswer(id, value)
+    );
+
+    await store.finishQuiz(SCORING_RULES);
 
     const finalState = useQuizStore.getState();
 
     expect(finalState.isFinished).toBe(true);
-    expect(finalState.score).toBe(50);
-    expect(finalState.profile).toBe("Especialista em Transição");
+    expect(finalState.score).toBeGreaterThan(0);
+    // moment === "started" → Perfil B (Consultor Iniciante)
+    expect(finalState.profile).toBe("B");
   });
 });
