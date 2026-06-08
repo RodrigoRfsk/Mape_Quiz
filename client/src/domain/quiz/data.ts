@@ -1,4 +1,7 @@
-import { ScoringRules, ProfileCategory } from "./types";
+import { ProfileCode } from "./types";
+
+// Regras de pontuação vivem no domínio compartilhado (usadas por client e server).
+export { SCORING_RULES } from "@shared/quiz/scoring";
 
 export interface QuestionOption {
   value: string;
@@ -253,93 +256,56 @@ export const QUIZ_QUESTIONS: Question[] = [
   },
 ];
 
-export const SCORING_RULES: ScoringRules = {
-  experience: {
-    "less-10": 10,
-    "10-15": 20,
-    "15-20": 30,
-    "more-20": 40,
-  },
-  moment: {
-    considering: 10,
-    transitioning: 30,
-    started: 50,
-    established: 70,
-  },
-  clarity: {
-    unclear: 20,
-    partial: 50,
-    clear: 80,
-  },
-  clients: {
-    none: 10,
-    pontual: 30,
-    irregular: 60,
-    stable: 90,
-  },
-};
-
-export const getCategoryDisplayData = (profile: ProfileCategory) => {
+export const getCategoryDisplayData = (profile: ProfileCode) => {
   const map: Record<
-    ProfileCategory,
-    { label: string; description: string; color: string; icon: string }
+    ProfileCode,
+    { code: ProfileCode; label: string; description: string; color: string; icon: string }
   > = {
-    "Especialista em Cargo CLT": {
-      label: "Especialista em Cargo CLT",
+    A: {
+      code: "A",
+      label: "O Indeciso Estratégico",
       description:
-        "Você está consolidado no ambiente corporativo e considerando os primeiros passos para consultoria.",
+        "Você tem o ativo mais difícil de construir: uma trajetória sólida. O que falta não é experiência — é a estrutura para transformar isso em uma oferta que o mercado entende, compara e contrata.",
       color: "from-blue-500 to-blue-600",
       icon: "💼",
     },
-    "Especialista em Transição": {
-      label: "Especialista em Transição",
+    B: {
+      code: "B",
+      label: "O Consultor Iniciante",
       description:
-        "Você está em processo de transição, com experiência sólida e começando a estruturar sua entrada no mercado consultivo.",
-      color: "from-purple-500 to-purple-600",
-      icon: "",
-    },
-    "Consultor Iniciante": {
-      label: "Consultor Iniciante",
-      description:
-        "Você já iniciou como consultor e tem alguns clientes, mas precisa de método e consistência para escalar.",
-      color: "from-orange-500 to-orange-600",
+        "Você já deu os primeiros passos e provou que tem demanda. O que trava o crescimento não é capacidade técnica — é estrutura para ir além das indicações e criar consistência.",
+      color: "from-emerald-500 to-emerald-600",
       icon: "⚡",
     },
-    "Consultor Estruturado": {
-      label: "Consultor Estruturado",
+    C: {
+      code: "C",
+      label: "O Frustrado Recente",
       description:
-        "Você já tem uma base sólida de clientes e receita. Agora é hora de otimizar, escalar e criar previsibilidade.",
-      color: "from-green-500 to-green-600",
-      icon: "👑",
+        "Você já tentou e sabe o que não funciona — e isso é vantagem. O próximo passo não é recomeçar do zero, mas reorganizar com método o que já existe.",
+      color: "from-purple-500 to-purple-600",
+      icon: "🔄",
     },
   };
 
   return map[profile];
 };
 
-export const getRecommendationsForProfile = (
-  profile: ProfileCategory
-): string[] => {
-  const map: Record<ProfileCategory, string[]> = {
-    "Especialista em Cargo CLT": [
-      "Comece a documentar sua experiência e expertise",
-      "Identifique seu primeiro nicho de mercado",
-      "Crie um plano de transição de 6-12 meses",
+export const getRecommendationsForProfile = (profile: ProfileCode): string[] => {
+  const map: Record<ProfileCode, string[]> = {
+    A: [
+      "Transforme sua trajetória executiva em uma oferta de alto valor (pilar Modelagem)",
+      "Construa autoridade antes de entrar — não depois de meses tentando (pilar Autoridade)",
+      "Estruture seu ponto de partida com método, não por tentativa e erro",
     ],
-    "Especialista em Transição": [
-      "Defina sua proposta de valor com clareza",
-      "Estruture seu primeiro projeto piloto",
-      "Crie um processo de prospecção ativo",
+    B: [
+      "Posicione sua oferta para justificar honorários compatíveis com sua expertise (pilar Autoridade)",
+      "Crie um motor de prospecção que vá além de indicações (pilar Prospecção)",
+      "Estabeleça previsibilidade — projetos que chegam por processo, não por acaso",
     ],
-    "Consultor Iniciante": [
-      "Implemente um sistema de gestão de clientes",
-      "Crie processos repetíveis e escaláveis",
-      "Desenvolva autoridade no seu nicho",
-    ],
-    "Consultor Estruturado": [
-      "Otimize sua precificação e margem",
-      "Crie ofertas premium e recorrentes",
-      "Estruture um modelo de negócio previsível",
+    C: [
+      "Diagnostique se o gargalo está na oferta ou na execução (pilar Execução)",
+      "Reorganize o que já existe com método — sem começar do zero",
+      "Crie consistência na entrega e gere recorrência com seus clientes",
     ],
   };
 

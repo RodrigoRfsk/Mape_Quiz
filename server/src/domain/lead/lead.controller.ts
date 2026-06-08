@@ -10,9 +10,10 @@ export const createLead = async (
   res: Response
 ): Promise<void> => {
   try {
-    const { score, profile, ...answers } = req.body;
-
-    const newLead = await processLeadSubmission({ score, profile, answers });
+    // O corpo traz as respostas (e, por compatibilidade, score/profile do
+    // cliente). O serviço valida, recalcula score/profile e ignora os valores
+    // enviados — então repassamos o corpo inteiro.
+    const newLead = await processLeadSubmission(req.body);
 
     res.status(201).json({
       message: "Lead captured successfully",

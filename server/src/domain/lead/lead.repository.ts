@@ -1,6 +1,6 @@
-import { QuizSubmissionPayload } from "@/infrastructure/validations/quiz.schema";
-import { db } from "server/src/db";
-import { leads } from "server/src/db/schema";
+import { QuizSubmissionPayload } from "@shared/quiz/schema";
+import { db } from "@server/db";
+import { leads } from "@server/db/schema";
 
 export interface LeadInsertData {
   name: string;

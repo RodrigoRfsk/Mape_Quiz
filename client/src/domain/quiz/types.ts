@@ -1,13 +1,6 @@
-export interface ScoringRules {
-  [questionId: string]: Record<string, number>;
-}
-
-export interface QuizAnswers {
-  [questionId: string]: string | string[];
-}
-
-export type ProfileCategory =
-  | "Especialista em Cargo CLT"
-  | "Especialista em Transição"
-  | "Consultor Iniciante"
-  | "Consultor Estruturado";
+// Re-exporta os tipos do domínio compartilhado (fonte única da verdade).
+export type {
+  ProfileCode,
+  QuizAnswers,
+  ScoringRules,
+} from "@shared/quiz/scoring";
