@@ -215,7 +215,6 @@ export default function QuizResults({
             </div>
           </motion.div>
 
-          {/* NOVO CTA */}
           <motion.div
             variants={itemVariants}
             className="bg-primary/10 border border-primary/30 rounded-lg p-8 mb-8 text-center"
