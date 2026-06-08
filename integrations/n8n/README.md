@@ -24,10 +24,24 @@ Webhook → Normalizar Lead → Roteia por Perfil (A/B/C)
 | `mape-cadence.workflow.json` | Workflow importável no n8n |
 | `whatsapp-sdr-scripts.md` | Scripts de WhatsApp/SDR (6 mensagens × 3 perfis) |
 
+## Stack local (docker-compose)
+
+O `docker-compose.yml` do projeto já sobe **n8n** (`:5678`) e **Mailhog**
+(SMTP de teste em `:1025`, UI em `:8025`) junto do Postgres:
+
+```bash
+docker compose up -d
+# n8n:     http://localhost:5678
+# Mailhog: http://localhost:8025
+```
+
+Como o n8n roda no Docker, ele alcança o backend (no host) por
+`http://host.docker.internal:3001` e o Mailhog pelo nome do serviço `mailhog`.
+
 ## Como importar e configurar
 
 1. **Importar**: no n8n → *Workflows* → *Import from File* → selecione `mape-cadence.workflow.json`.
-2. **Credencial de e-mail (SMTP)**: abra qualquer nó `E-mail` e associe uma credencial SMTP. Ajuste o remetente: troque `contato@SEU_DOMINIO.com` (em todos os nós de e-mail e no *Notificar SDR*).
+2. **Credencial de e-mail (SMTP)**: abra qualquer nó `E-mail` e associe uma credencial SMTP. Para o Mailhog do compose use `host: mailhog`, `port: 1025`, sem SSL/credenciais. Ajuste o remetente: troque `contato@SEU_DOMINIO.com` (em todos os nós de e-mail e no *Notificar SDR*).
 3. **Destino do SDR**: no nó *Notificar SDR*, troque `sdr@SEU_DOMINIO.com` pelo e-mail/integração da equipe (pode trocar por Slack/CRM, ver abaixo).
 4. **Ativar** o workflow. Copie a *Production URL* do nó *Webhook*.
 5. **Conectar o backend**: defina essa URL como `N8N_WEBHOOK_URL` no `server/.env` do projeto. O backend dispara o lead automaticamente após persistir (ver `server/src/domain/lead/lead.webhook.ts`).
