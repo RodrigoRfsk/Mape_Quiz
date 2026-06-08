@@ -1,6 +1,5 @@
 import { ProfileCode } from "./types";
 
-// Regras de pontuação vivem no domínio compartilhado (usadas por client e server).
 export { SCORING_RULES } from "@shared/quiz/scoring";
 
 export interface QuestionOption {

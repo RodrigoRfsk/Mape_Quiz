@@ -10,11 +10,6 @@ export class ApiSubmissionError extends Error {
   }
 }
 
-/**
- * Envia o lead para a API (Express), que valida, recalcula score/perfil e
- * persiste. A notificação ao orquestrador de marketing (n8n) é responsabilidade
- * do backend — o cliente sempre fala apenas com a própria API.
- */
 export const submitQuizLead = async (
   payload: QuizSubmissionPayload,
   score: number,

@@ -1,8 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-// Mockamos as fronteiras de I/O para testar a regra de negócio isoladamente.
-// Mockar o repository também evita que @server/db (pool do Postgres) seja
-// carregado durante o teste.
 vi.mock("./lead.repository", () => ({
   createLeadInDb: vi.fn(),
 }));
@@ -41,21 +38,19 @@ describe("processLeadSubmission", () => {
     vi.clearAllMocks();
   });
 
-  it("recalcula score e perfil no servidor, ignorando os valores do cliente", async () => {
+  it("recomputes score and profile on the server, ignoring client-sent values", async () => {
     createLeadMock.mockResolvedValue({ id: "lead-1", email: validPayload.email });
 
-    // O cliente tenta forjar profile "A" e um score absurdo.
     await processLeadSubmission({ ...validPayload, profile: "A", score: 999 });
 
     expect(createLeadMock).toHaveBeenCalledTimes(1);
     const persisted = createLeadMock.mock.calls[0][0];
-    // moment === "started" => Perfil B (não o "A" enviado pelo cliente).
     expect(persisted.profile).toBe("B");
     expect(persisted.score).not.toBe(999);
     expect(typeof persisted.score).toBe("number");
   });
 
-  it("dispara para o orquestrador apenas após persistir, com os dados do lead novo", async () => {
+  it("dispatches to the orchestrator only after persisting, with the new lead data", async () => {
     createLeadMock.mockResolvedValue({ id: "lead-1", email: validPayload.email });
 
     await processLeadSubmission(validPayload);
@@ -66,7 +61,7 @@ describe("processLeadSubmission", () => {
     expect(dispatched.profile).toBe("B");
   });
 
-  it("não dispara a cadência quando o e-mail já existe (idempotência)", async () => {
+  it("does not dispatch the cadence when the email already exists (idempotency)", async () => {
     createLeadMock.mockRejectedValue({ code: "23505" });
 
     await expect(processLeadSubmission(validPayload)).rejects.toBeInstanceOf(
@@ -75,7 +70,7 @@ describe("processLeadSubmission", () => {
     expect(dispatchMock).not.toHaveBeenCalled();
   });
 
-  it("rejeita payload inválido sem tocar no banco", async () => {
+  it("rejects an invalid payload without touching the database", async () => {
     await expect(
       processLeadSubmission({ name: "x" })
     ).rejects.toBeInstanceOf(ValidationError);

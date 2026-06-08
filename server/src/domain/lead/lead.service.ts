@@ -43,10 +43,6 @@ export const processLeadSubmission = async (rawPayload: unknown) => {
 
   const answers = validationResult.data;
 
-  // O backend é a fonte da verdade: score e perfil são recalculados a partir
-  // das respostas validadas, nunca confiando nos valores enviados pelo cliente
-  // (que poderiam ser adulterados). O cliente usa a mesma lógica compartilhada
-  // apenas para exibir o resultado na hora, então os valores coincidem.
   const answersForScoring = answers as unknown as QuizAnswers;
   const score = calculateConsultingScore(answersForScoring, SCORING_RULES);
   const profile = determineProfile(answersForScoring);
@@ -60,8 +56,6 @@ export const processLeadSubmission = async (rawPayload: unknown) => {
       rawAnswers: answers,
     });
 
-    // Persistiu → só então notifica o orquestrador (n8n), que lê o `profile`
-    // para acionar a sequência de e-mails/mensagens correspondente.
     await dispatchLeadToOrchestrator({
       id: newLead.id,
       name: answers.name,

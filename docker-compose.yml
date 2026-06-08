@@ -19,6 +19,34 @@ services:
       timeout: 5s
       retries: 5
 
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: mape_quiz_n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      N8N_PORT: 5678
+      N8N_HOST: localhost
+      N8N_PROTOCOL: http
+      WEBHOOK_URL: http://localhost:5678/
+      GENERIC_TIMEZONE: America/Sao_Paulo
+      N8N_SECURE_COOKIE: "false"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - n8ndata:/home/node/.n8n
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: mape_quiz_mailhog
+    restart: unless-stopped
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
 volumes:
   pgdata:
     name: mape_quiz_pgdata
+  n8ndata:
+    name: mape_quiz_n8ndata

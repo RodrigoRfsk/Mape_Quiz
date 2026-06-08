@@ -77,7 +77,6 @@ describe("Quiz Store", () => {
 
     expect(finalState.isFinished).toBe(true);
     expect(finalState.score).toBeGreaterThan(0);
-    // moment === "started" → Perfil B (Consultor Iniciante)
     expect(finalState.profile).toBe("B");
   });
 });

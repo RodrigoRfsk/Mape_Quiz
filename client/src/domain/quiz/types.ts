@@ -1,4 +1,3 @@
-// Re-exporta os tipos do domínio compartilhado (fonte única da verdade).
 export type {
   ProfileCode,
   QuizAnswers,
