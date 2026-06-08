@@ -3,8 +3,7 @@ import cors from "cors";
 import { createServer } from "http";
 import path from "path";
 import { fileURLToPath } from "url";
-// 👇 Importação da nossa nova rota de Leads
-import { leadRoutes } from "./src/routes/lead.routes.js";
+import { leadRoutes } from "./src/domain/lead/lead.routes";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
