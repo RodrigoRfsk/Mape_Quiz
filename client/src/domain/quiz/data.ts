@@ -1,4 +1,7 @@
-import { ScoringRules, ProfileCode } from "./types";
+import { ProfileCode } from "./types";
+
+// Regras de pontuação vivem no domínio compartilhado (usadas por client e server).
+export { SCORING_RULES } from "@shared/quiz/scoring";
 
 export interface QuestionOption {
   value: string;
@@ -252,32 +255,6 @@ export const QUIZ_QUESTIONS: Question[] = [
     placeholder: "seu@email.com",
   },
 ];
-
-export const SCORING_RULES: ScoringRules = {
-  experience: {
-    "less-10": 10,
-    "10-15": 20,
-    "15-20": 30,
-    "more-20": 40,
-  },
-  moment: {
-    considering: 10,
-    transitioning: 30,
-    started: 50,
-    established: 70,
-  },
-  clarity: {
-    unclear: 20,
-    partial: 50,
-    clear: 80,
-  },
-  clients: {
-    none: 10,
-    pontual: 30,
-    irregular: 60,
-    stable: 90,
-  },
-};
 
 export const getCategoryDisplayData = (profile: ProfileCode) => {
   const map: Record<
