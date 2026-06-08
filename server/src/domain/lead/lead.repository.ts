@@ -1,4 +1,4 @@
-import { QuizSubmissionPayload } from "@/infrastructure/validations/quiz.schema";
+import { QuizSubmissionPayload } from "@shared/quiz/schema";
 import { db } from "server/src/db";
 import { leads } from "server/src/db/schema";
 

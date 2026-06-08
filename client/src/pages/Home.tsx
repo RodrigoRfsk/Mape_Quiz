@@ -18,7 +18,7 @@ import {
   SCORING_RULES,
   getCategoryDisplayData,
 } from "@/domain/quiz/data";
-import { quizSubmissionSchema } from "@/infrastructure/validations/quiz.schema";
+import { quizSubmissionSchema } from "@shared/quiz/schema";
 import { useQuizStore } from "@/app/store/quiz.store";
 import { ZodError } from "zod";
 

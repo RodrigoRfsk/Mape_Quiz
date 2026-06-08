@@ -7,7 +7,7 @@ import {
   submitQuizLead,
   ApiSubmissionError,
 } from "@/infrastructure/api/quiz.service";
-import { quizSubmissionSchema } from "@/infrastructure/validations/quiz.schema";
+import { quizSubmissionSchema } from "@shared/quiz/schema";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 

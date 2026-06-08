@@ -1,4 +1,4 @@
-import { QuizSubmissionPayload } from "../validations/quiz.schema";
+import { QuizSubmissionPayload } from "@shared/quiz/schema";
 
 export class ApiSubmissionError extends Error {
   constructor(

@@ -1,4 +1,4 @@
-import { quizSubmissionSchema } from "@/infrastructure/validations/quiz.schema";
+import { quizSubmissionSchema } from "@shared/quiz/schema";
 import {
   calculateConsultingScore,
   determineProfile,
