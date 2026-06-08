@@ -259,7 +259,13 @@ export const QUIZ_QUESTIONS: Question[] = [
 export const getCategoryDisplayData = (profile: ProfileCode) => {
   const map: Record<
     ProfileCode,
-    { code: ProfileCode; label: string; description: string; color: string; icon: string }
+    {
+      code: ProfileCode;
+      label: string;
+      description: string;
+      color: string;
+      icon: string;
+    }
   > = {
     A: {
       code: "A",
@@ -267,7 +273,7 @@ export const getCategoryDisplayData = (profile: ProfileCode) => {
       description:
         "Você tem o ativo mais difícil de construir: uma trajetória sólida. O que falta não é experiência — é a estrutura para transformar isso em uma oferta que o mercado entende, compara e contrata.",
       color: "from-blue-500 to-blue-600",
-      icon: "💼",
+      icon: "",
     },
     B: {
       code: "B",
@@ -275,7 +281,7 @@ export const getCategoryDisplayData = (profile: ProfileCode) => {
       description:
         "Você já deu os primeiros passos e provou que tem demanda. O que trava o crescimento não é capacidade técnica — é estrutura para ir além das indicações e criar consistência.",
       color: "from-emerald-500 to-emerald-600",
-      icon: "⚡",
+      icon: "",
     },
     C: {
       code: "C",
@@ -283,14 +289,16 @@ export const getCategoryDisplayData = (profile: ProfileCode) => {
       description:
         "Você já tentou e sabe o que não funciona — e isso é vantagem. O próximo passo não é recomeçar do zero, mas reorganizar com método o que já existe.",
       color: "from-purple-500 to-purple-600",
-      icon: "🔄",
+      icon: "",
     },
   };
 
   return map[profile];
 };
 
-export const getRecommendationsForProfile = (profile: ProfileCode): string[] => {
+export const getRecommendationsForProfile = (
+  profile: ProfileCode
+): string[] => {
   const map: Record<ProfileCode, string[]> = {
     A: [
       "Transforme sua trajetória executiva em uma oferta de alto valor (pilar Modelagem)",
