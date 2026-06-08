@@ -9,7 +9,6 @@ interface QuizHeroProps {
 export default function QuizHero({ onStart }: QuizHeroProps) {
   return (
     <div className="relative min-h-screen overflow-hidden bg-background flex flex-col justify-center">
-      {/* Animated background elements */}
       <div className="absolute inset-0">
         <div
           className="absolute inset-0 opacity-20"
@@ -38,7 +37,6 @@ export default function QuizHero({ onStart }: QuizHeroProps) {
         />
       </div>
 
-      {/* Main content with diagonal cut */}
       <div className="relative diagonal-cut bg-gradient-to-br from-card via-background to-card/50 py-20 md:py-32 w-full">
         <div className="container">
           <motion.div
@@ -47,7 +45,6 @@ export default function QuizHero({ onStart }: QuizHeroProps) {
             transition={{ duration: 0.6 }}
             className="max-w-5xl mx-auto flex flex-col items-center text-center"
           >
-            {/* Badge */}
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -60,7 +57,6 @@ export default function QuizHero({ onStart }: QuizHeroProps) {
               </span>
             </motion.div>
 
-            {/* Main heading */}
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -78,7 +74,6 @@ export default function QuizHero({ onStart }: QuizHeroProps) {
               </span>
             </motion.h1>
 
-            {/* Subheading */}
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -90,7 +85,6 @@ export default function QuizHero({ onStart }: QuizHeroProps) {
               para sua evolução.
             </motion.p>
 
-            {/* CTA Info */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -111,7 +105,6 @@ export default function QuizHero({ onStart }: QuizHeroProps) {
               </div>
             </motion.div>
 
-            {/* Start Button */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -129,7 +122,6 @@ export default function QuizHero({ onStart }: QuizHeroProps) {
           </motion.div>
         </div>
 
-        {/* Decorative accent line */}
         <motion.div
           className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-32 bg-gradient-to-b from-primary via-secondary to-transparent"
           initial={{ opacity: 0, scaleY: 0 }}

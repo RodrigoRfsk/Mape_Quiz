@@ -1,13 +1,3 @@
-/**
- * Disparo do lead para o orquestrador de marketing (n8n).
- *
- * É chamado SOMENTE após a persistência bem-sucedida do lead. Como o insert
- * falha em e-mail duplicado, o disparo ocorre apenas para leads novos — o que
- * garante a idempotência da cadência (o lead não entra duas vezes na sequência).
- *
- * Falhas aqui são não-fatais: o lead já está salvo no banco (fonte da verdade),
- * então apenas registramos o erro para reprocessamento/observabilidade.
- */
 export interface OrchestratorLeadPayload {
   id: string;
   name: string;
@@ -24,7 +14,7 @@ export const dispatchLeadToOrchestrator = async (
 
   if (!webhookUrl) {
     console.warn(
-      "[Lead] N8N_WEBHOOK_URL não configurada — disparo para o orquestrador ignorado."
+      "[Lead] N8N_WEBHOOK_URL is not set — skipping orchestrator dispatch."
     );
     return;
   }
@@ -44,12 +34,12 @@ export const dispatchLeadToOrchestrator = async (
     });
 
     console.log(
-      `[Lead] Lead ${lead.id} (perfil ${lead.profile}) enviado ao orquestrador.`
+      `[Lead] Lead ${lead.id} (profile ${lead.profile}) dispatched to orchestrator.`
     );
   } catch (error: unknown) {
     console.error(
-      "[Lead] Falha ao notificar o orquestrador (lead já persistido):",
-      error instanceof Error ? error.message : "Erro desconhecido"
+      "[Lead] Failed to notify orchestrator (lead already persisted):",
+      error instanceof Error ? error.message : "Unknown error"
     );
   }
 };
