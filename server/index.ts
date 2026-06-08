@@ -13,14 +13,16 @@ async function startServer() {
   const app = express();
   const server = createServer(app);
 
-  app.use(
-    cors({
-      origin:
-        process.env.NODE_ENV !== "production"
-          ? "http://localhost:3000"
-          : undefined,
-    })
-  );
+  // Origem do frontend permitida pelo CORS. Em produção, sem CLIENT_URL,
+  // assume-se que o client é servido no mesmo domínio (origin same-origin,
+  // dispensa CORS). Em dev, libera o Vite (localhost:3000 por padrão).
+  const corsOrigin =
+    process.env.CLIENT_URL ||
+    (process.env.NODE_ENV === "production"
+      ? undefined
+      : "http://localhost:3000");
+
+  app.use(cors({ origin: corsOrigin }));
 
   app.use(express.json());
 
