@@ -20,6 +20,7 @@ import {
 } from "@/domain/quiz/data";
 import { quizSubmissionSchema } from "@shared/quiz/schema";
 import { useQuizStore } from "@/app/store/quiz.store";
+import { loadQuizProgress } from "@/infrastructure/api/quiz-session.service";
 import { ZodError } from "zod";
 
 export default function Home() {
@@ -38,9 +39,16 @@ export default function Home() {
   const previousQuestion = useQuizStore(state => state.previousQuestion);
   const finishQuiz = useQuizStore(state => state.finishQuiz);
   const resetQuiz = useQuizStore(state => state.resetQuiz);
+  const beginQuiz = useQuizStore(state => state.beginQuiz);
+  const applyRemoteProgress = useQuizStore(state => state.applyRemoteProgress);
 
   const [stepError, setStepError] = useState<string | null>(null);
-  const [hasStarted, setHasStarted] = useState<boolean>(false);
+  const [hasStarted, setHasStarted] = useState<boolean>(() => {
+    const state = useQuizStore.getState();
+    return (
+      state.status === "in_progress" && Object.keys(state.answers).length > 0
+    );
+  });
 
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const [analysisText, setAnalysisText] = useState<string>("");
@@ -55,7 +63,7 @@ export default function Home() {
   };
 
   const handleStart = () => {
-    resetQuiz();
+    beginQuiz();
     setStepError(null);
     setHasStarted(true);
   };
@@ -65,6 +73,28 @@ export default function Home() {
     setStepError(null);
     setHasStarted(false);
   };
+
+  useEffect(() => {
+    const state = useQuizStore.getState();
+    if (
+      !state.sessionId ||
+      state.status === "completed" ||
+      Object.keys(state.answers).length > 0
+    ) {
+      return;
+    }
+
+    void loadQuizProgress(state.sessionId).then(remote => {
+      if (
+        remote &&
+        !remote.completed &&
+        Object.keys(remote.answers).length > 0
+      ) {
+        applyRemoteProgress(remote.answers, remote.currentQuestionIndex);
+        setHasStarted(true);
+      }
+    });
+  }, [applyRemoteProgress]);
 
   const triggerAiAnalysis = () => {
     setIsAnalyzing(true);
