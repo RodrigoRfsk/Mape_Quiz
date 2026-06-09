@@ -1,17 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import {
-  ChevronRight,
-  CheckCircle2,
-  Loader2,
-  AlertCircle,
-  Cpu,
-} from "lucide-react";
+import { ChevronRight, CheckCircle2, Loader2, AlertCircle } from "lucide-react";
 import QuizHero from "@/components/QuizHero";
 import QuizQuestion from "@/components/QuizQuestion";
 import QuizResults from "@/components/QuizResults";
+import AiAnalysis from "@/components/AiAnalysis";
 
 import {
   QUIZ_QUESTIONS,
@@ -51,8 +46,6 @@ export default function Home() {
   });
 
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
-  const [analysisText, setAnalysisText] = useState<string>("");
-  const analysisTimers = useRef<NodeJS.Timeout[]>([]);
 
   const currentQuestion = QUIZ_QUESTIONS[currentQuestionIndex];
   const progress = ((currentQuestionIndex + 1) / QUIZ_QUESTIONS.length) * 100;
@@ -98,29 +91,11 @@ export default function Home() {
 
   const triggerAiAnalysis = () => {
     setIsAnalyzing(true);
+  };
 
-    analysisTimers.current.forEach(clearTimeout);
-    analysisTimers.current = [];
-
-    const t1 = setTimeout(
-      () => setAnalysisText("Processando padrões de comportamento..."),
-      0
-    );
-    const t2 = setTimeout(
-      () => setAnalysisText("Cruzando dados com métricas de mercado..."),
-      1200
-    );
-    const t3 = setTimeout(
-      () => setAnalysisText("Calibrando modelo preditivo..."),
-      2400
-    );
-
-    const tFinal = setTimeout(() => {
-      setIsAnalyzing(false);
-      nextQuestion();
-    }, 3500);
-
-    analysisTimers.current = [t1, t2, t3, tFinal];
+  const handleAnalysisComplete = () => {
+    setIsAnalyzing(false);
+    nextQuestion();
   };
 
   const handleNext = async () => {
@@ -205,7 +180,6 @@ export default function Home() {
     return (
       <QuizResults
         answers={answers}
-        score={score}
         profile={profile}
         category={categoryDisplay}
         onRestart={handleRestart}
@@ -252,7 +226,7 @@ export default function Home() {
                 </div>
                 <div className="h-2 bg-card rounded-full overflow-hidden border border-border">
                   <motion.div
-                    className="h-full bg-gradient-to-r from-primary via-secondary to-accent"
+                    className="h-full bg-primary"
                     initial={{ width: 0 }}
                     animate={{ width: `${progress}%` }}
                     transition={{ duration: 0.5, ease: "easeOut" }}
@@ -270,18 +244,7 @@ export default function Home() {
                     transition={{ duration: 0.4 }}
                     className="flex flex-col items-center justify-center min-h-[400px] border-2 border-border bg-card p-8 md:p-12 neo-card shadow-lg rounded-xl"
                   >
-                    <div className="relative mb-8">
-                      <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse" />
-                      <Cpu className="w-16 h-16 text-primary relative z-10 animate-pulse" />
-                      <Loader2 className="w-24 h-24 text-primary/30 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-spin" />
-                    </div>
-
-                    <h3 className="neo-display text-2xl md:text-3xl mb-4 text-foreground">
-                      Análise em Tempo Real
-                    </h3>
-                    <p className="text-muted-foreground font-mono text-sm animate-pulse h-6">
-                      {analysisText}
-                    </p>
+                    <AiAnalysis onComplete={handleAnalysisComplete} />
                   </motion.div>
                 ) : (
                   <motion.div
