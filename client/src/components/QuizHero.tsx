@@ -52,15 +52,15 @@ export default function QuizHero({ onStart }: QuizHeroProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.6 }}
-              className="neo-display text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-black mb-5 sm:mb-8 leading-snug sm:leading-tight tracking-tight"
+              className="neo-display text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-black mb-5 sm:mb-8 leading-snug sm:leading-tight tracking-tight text-balance"
             >
-              <span className="block">Nossa IA analisa seu perfil</span>
-              <span className="block">e revela se você está preparado</span>
-              <span className="block">para transformar sua experiência</span>
-              <span className="block mt-2 text-primary">
-                em uma consultoria valorizada
+              <span className="block">
+                Nossa IA analisa seu perfil e revela se você está preparado para
+                transformar sua experiência
               </span>
-              <span className="block mt-2 text-primary">pelo mercado.</span>
+              <span className="block mt-2 text-primary">
+                em uma consultoria valorizada pelo mercado.
+              </span>
             </motion.h1>
 
             <motion.p
