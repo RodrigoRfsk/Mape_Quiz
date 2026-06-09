@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -38,14 +38,43 @@ export default function Home() {
   const [stepError, setStepError] = useState<string | null>(null);
 
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
+  const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const currentQuestion = QUIZ_QUESTIONS[currentQuestionIndex];
   const progress = ((currentQuestionIndex + 1) / QUIZ_QUESTIONS.length) * 100;
 
+  const goToNextStep = () => {
+    setStepError(null);
+
+    if (currentQuestionIndex < QUIZ_QUESTIONS.length - 1) {
+      if (currentQuestionIndex === 3 || currentQuestionIndex === 8) {
+        triggerAiAnalysis();
+      } else {
+        nextQuestion();
+      }
+      return;
+    }
+
+    console.info("Dispatching final quiz submission");
+    void finishQuiz(SCORING_RULES);
+  };
+
   const handleAnswer = (value: string | string[]) => {
     setAnswer(currentQuestion.id, value);
     if (stepError) setStepError(null);
+
+    if (currentQuestion.type === "radio") {
+      if (advanceTimer.current) clearTimeout(advanceTimer.current);
+      advanceTimer.current = setTimeout(goToNextStep, 350);
+    }
   };
+
+  useEffect(
+    () => () => {
+      if (advanceTimer.current) clearTimeout(advanceTimer.current);
+    },
+    []
+  );
 
   const handleStart = () => {
     beginQuiz();
@@ -99,18 +128,7 @@ export default function Home() {
       }
     }
 
-    setStepError(null);
-
-    if (currentQuestionIndex < QUIZ_QUESTIONS.length - 1) {
-      if (currentQuestionIndex === 3 || currentQuestionIndex === 8) {
-        triggerAiAnalysis();
-      } else {
-        nextQuestion();
-      }
-    } else {
-      console.info("Dispatching final quiz submission");
-      await finishQuiz(SCORING_RULES);
-    }
+    goToNextStep();
   };
 
   const isAnswered =
