@@ -104,9 +104,9 @@ export default function PhoneInput({
   };
 
   return (
-    <div className="flex gap-2">
+    <div className="flex flex-col gap-2 sm:flex-row">
       <Select value={countryCode} onValueChange={handleCountryChange}>
-        <SelectTrigger className="w-[112px] shrink-0 border-2 border-border bg-transparent py-6 text-base focus:border-primary focus:ring-1 focus:ring-primary">
+        <SelectTrigger className="w-full shrink-0 border-2 border-border bg-transparent py-6 text-base focus:border-primary focus:ring-1 focus:ring-primary sm:w-[120px]">
           <span className="flex items-center gap-2">
             <span className="text-lg leading-none">{country.flag}</span>
             <span>{country.dial}</span>
@@ -131,7 +131,7 @@ export default function PhoneInput({
         placeholder={placeholder}
         value={formatNational(digits, country.dial)}
         onChange={event => handleNumberChange(event.target.value)}
-        className="flex-1 text-base py-6 px-4 border-2 border-border bg-transparent text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary rounded-lg transition-all"
+        className="w-full sm:flex-1 text-base py-6 px-4 border-2 border-border bg-transparent text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary rounded-lg transition-all"
       />
     </div>
   );
