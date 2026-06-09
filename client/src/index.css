@@ -146,7 +146,13 @@
 }
 
 .diagonal-cut {
-  clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+  clip-path: none;
+}
+
+@media (min-width: 768px) {
+  .diagonal-cut {
+    clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+  }
 }
 
 .diagonal-cut-reverse {
