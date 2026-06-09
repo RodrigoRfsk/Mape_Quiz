@@ -59,17 +59,13 @@ describe("Quiz Store", () => {
 
     const validAnswers: Record<string, string | string[]> = {
       name: "Maria Silva",
-      area: "Finanças corporativas",
-      experience: "more-20",
-      moment: "started",
-      "main-question": "Como estruturar minha entrada?",
       email: "maria@example.com",
       phone: "(11) 99999-9999",
+      moment: "started",
       clarity: "partial",
-      sector: "Indústria de médio porte",
       clients: "pontual",
-      "expected-result": "structure",
       timeline: "3m",
+      "main-question": "Como estruturar minha entrada?",
     };
 
     Object.entries(validAnswers).forEach(([id, value]) =>

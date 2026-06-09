@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { ChevronRight, CheckCircle2, Loader2, AlertCircle } from "lucide-react";
 import QuizHero from "@/components/QuizHero";
 import QuizQuestion from "@/components/QuizQuestion";
+import IdentityStep from "@/components/IdentityStep";
 import QuizResults from "@/components/QuizResults";
 import AiAnalysis from "@/components/AiAnalysis";
 
@@ -47,7 +48,7 @@ export default function Home() {
     setStepError(null);
 
     if (currentQuestionIndex < QUIZ_QUESTIONS.length - 1) {
-      if (currentQuestionIndex === 3 || currentQuestionIndex === 8) {
+      if (currentQuestionIndex === 5) {
         triggerAiAnalysis();
       } else {
         nextQuestion();
@@ -117,6 +118,27 @@ export default function Home() {
   };
 
   const handleNext = async () => {
+    if (currentQuestion.type === "identity") {
+      const identityFields = ["name", "email", "phone"] as const;
+
+      for (const field of identityFields) {
+        const shape =
+          quizSubmissionSchema.shape[
+            field as keyof typeof quizSubmissionSchema.shape
+          ];
+        const result = shape.safeParse(answers[field]);
+
+        if (!result.success) {
+          const zodError = result.error as ZodError<string>;
+          setStepError(zodError.issues[0]?.message || "Valor inválido.");
+          return;
+        }
+      }
+
+      goToNextStep();
+      return;
+    }
+
     const fieldSchema =
       quizSubmissionSchema.shape[
         currentQuestion.id as keyof typeof quizSubmissionSchema.shape
@@ -136,13 +158,20 @@ export default function Home() {
     goToNextStep();
   };
 
+  const isIdentityComplete =
+    String(answers.name || "").trim().length >= 2 &&
+    /\S+@\S+\.\S+/.test(String(answers.email || "")) &&
+    String(answers.phone || "").trim().length > 0;
+
   const isAnswered =
-    currentQuestion.optional ||
-    (answers[currentQuestion.id] !== undefined &&
-      answers[currentQuestion.id] !== "" &&
-      (Array.isArray(answers[currentQuestion.id])
-        ? answers[currentQuestion.id].length > 0
-        : true));
+    currentQuestion.type === "identity"
+      ? isIdentityComplete
+      : currentQuestion.optional ||
+        (answers[currentQuestion.id] !== undefined &&
+          answers[currentQuestion.id] !== "" &&
+          (Array.isArray(answers[currentQuestion.id])
+            ? answers[currentQuestion.id].length > 0
+            : true));
 
   useEffect(() => {
     const handleEnterKey = (event: KeyboardEvent) => {
@@ -278,12 +307,22 @@ export default function Home() {
                           )}
                         </motion.div>
 
-                        <QuizQuestion
-                          question={currentQuestion}
-                          answer={answers[currentQuestion.id]}
-                          onAnswer={handleAnswer}
-                          maxCheckboxes={2}
-                        />
+                        {currentQuestion.type === "identity" ? (
+                          <IdentityStep
+                            answers={answers}
+                            onChange={(id, value) => {
+                              setAnswer(id, value);
+                              if (stepError) setStepError(null);
+                            }}
+                          />
+                        ) : (
+                          <QuizQuestion
+                            question={currentQuestion}
+                            answer={answers[currentQuestion.id]}
+                            onAnswer={handleAnswer}
+                            maxCheckboxes={2}
+                          />
+                        )}
                       </div>
 
                       {stepError && (

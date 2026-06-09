@@ -220,3 +220,10 @@ button:hover:not(:disabled) {
   box-shadow: 0 0 20px rgba(255, 215, 0, 0.15);
   transform: translateY(-2px);
 }
+
+@media print {
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

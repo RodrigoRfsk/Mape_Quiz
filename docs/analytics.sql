@@ -25,20 +25,13 @@ limit 20;
 -- 4. Funil de abandono: em qual pergunta as pessoas param
 with perguntas(id, ordem, rotulo) as (
   values
-    ('name', 1, 'Nome'),
-    ('experience', 2, 'Experiência'),
-    ('moment', 3, 'Momento atual'),
-    ('area', 4, 'Área de atuação'),
-    ('obstacles', 5, 'Obstáculos'),
-    ('clarity', 6, 'Clareza de oferta'),
-    ('phone', 7, 'Telefone'),
-    ('clients', 8, 'Carteira de clientes'),
-    ('expected-result', 9, 'Resultado esperado'),
-    ('main-question', 10, 'Pergunta principal'),
-    ('timeline', 11, 'Horizonte de tempo'),
-    ('sector', 12, 'Setor'),
-    ('additional', 13, 'Adicional'),
-    ('email', 14, 'E-mail')
+    ('identity', 1, 'Identificação'),
+    ('moment', 2, 'Momento atual'),
+    ('clarity', 3, 'Posicionamento'),
+    ('obstacles', 4, 'Obstáculos'),
+    ('clients', 5, 'Operação atual'),
+    ('timeline', 6, 'Horizonte de tempo'),
+    ('main-question', 7, 'Pergunta final')
 )
 select
   coalesce(p.ordem, 99)                  as ordem,

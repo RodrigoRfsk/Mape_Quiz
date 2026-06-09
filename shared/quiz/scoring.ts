@@ -8,15 +8,9 @@ export interface QuizAnswers {
 
 export type ProfileCode = "A" | "B" | "C";
 
-const MAX_POSSIBLE_SCORE = 280;
+const MAX_POSSIBLE_SCORE = 240;
 
 export const SCORING_RULES: ScoringRules = {
-  experience: {
-    "less-10": 10,
-    "10-15": 20,
-    "15-20": 30,
-    "more-20": 40,
-  },
   moment: {
     considering: 10,
     transitioning: 30,
