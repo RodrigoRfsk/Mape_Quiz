@@ -27,10 +27,7 @@ async function startServer() {
   app.use("/api/leads", leadRoutes);
   app.use("/api/quiz-sessions", quizSessionRoutes);
 
-  const staticPath =
-    process.env.NODE_ENV === "production"
-      ? path.resolve(__dirname, "public")
-      : path.resolve(__dirname, "..", "dist", "public");
+  const staticPath = path.resolve(__dirname, "..", "dist", "public");
 
   app.use(express.static(staticPath));
 
