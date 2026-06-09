@@ -5,6 +5,7 @@ import { createServer } from "http";
 import path from "path";
 import { fileURLToPath } from "url";
 import { leadRoutes } from "@server/domain/lead/lead.routes";
+import { quizSessionRoutes } from "@server/domain/quiz-session/quiz-session.routes";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -24,6 +25,7 @@ async function startServer() {
   app.use(express.json());
 
   app.use("/api/leads", leadRoutes);
+  app.use("/api/quiz-sessions", quizSessionRoutes);
 
   const staticPath =
     process.env.NODE_ENV === "production"
