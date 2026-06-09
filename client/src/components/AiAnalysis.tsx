@@ -1,14 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Bot, Check } from "lucide-react";
-
-const STEPS = [
-  "Lendo suas respostas",
-  "Processando padrões de comportamento",
-  "Cruzando com métricas de mercado",
-  "Calibrando o modelo preditivo",
-  "Gerando seu diagnóstico",
-];
+import { Bot } from "lucide-react";
 
 const RADIUS = 54;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
@@ -49,9 +41,6 @@ export default function AiAnalysis({
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
   }, [durationMs]);
-
-  const isStepDone = (index: number) =>
-    progress >= ((index + 1) / STEPS.length) * 100;
 
   return (
     <div className="flex flex-col items-center text-center">
@@ -110,55 +99,9 @@ export default function AiAnalysis({
       <h3 className="neo-display text-2xl md:text-3xl mb-1 text-foreground">
         Analisando seu perfil com IA
       </h3>
-      <p className="text-sm text-muted-foreground mb-6">
+      <p className="text-sm text-muted-foreground">
         Cruzando suas respostas com o método MAPE
       </p>
-
-      <div className="w-full max-w-sm space-y-2 text-left">
-        {STEPS.map((step, index) => {
-          const done = isStepDone(index);
-          const active = !done && (index === 0 || isStepDone(index - 1));
-
-          return (
-            <motion.div
-              key={step}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: done || active ? 1 : 0.45, x: 0 }}
-              transition={{ duration: 0.3 }}
-              className={`flex items-center gap-3 rounded-lg border px-3 py-2 transition-colors ${
-                done
-                  ? "border-primary/40 bg-primary/5"
-                  : active
-                    ? "border-border bg-muted/30"
-                    : "border-transparent"
-              }`}
-            >
-              <span
-                className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
-                  done
-                    ? "border-primary bg-primary text-primary-foreground"
-                    : "border-muted-foreground"
-                }`}
-              >
-                {done ? (
-                  <Check className="h-3 w-3" />
-                ) : active ? (
-                  <motion.span
-                    className="h-2 w-2 rounded-full bg-primary"
-                    animate={{ opacity: [1, 0.2, 1] }}
-                    transition={{ duration: 1, repeat: Infinity }}
-                  />
-                ) : null}
-              </span>
-              <span
-                className={`text-sm ${done ? "text-foreground" : "text-muted-foreground"}`}
-              >
-                {step}
-              </span>
-            </motion.div>
-          );
-        })}
-      </div>
     </div>
   );
 }
