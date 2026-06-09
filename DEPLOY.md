@@ -21,8 +21,38 @@ O app serve a API e o site na mesma origem, então o front fala com `/api/...`
    ```
 3. Guarde essa string — é o `DATABASE_URL`. (O `?sslmode=require` é importante.)
 
-> As tabelas (`leads`, `quiz_sessions`) são criadas automaticamente no deploy do
-> Render pelo `pnpm db:push` (pré-deploy). Não precisa rodar nada manual no Neon.
+### Criar as tabelas (uma vez)
+
+No Neon → **SQL Editor**, cole e rode:
+
+```sql
+CREATE TABLE IF NOT EXISTS leads (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  name text NOT NULL,
+  email text NOT NULL UNIQUE,
+  score integer NOT NULL,
+  profile text NOT NULL,
+  raw_answers jsonb NOT NULL,
+  created_at timestamp DEFAULT now() NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS quiz_sessions (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  session_id text NOT NULL UNIQUE,
+  answers jsonb NOT NULL,
+  current_question_index integer NOT NULL DEFAULT 0,
+  last_question_id text,
+  answered_count integer NOT NULL DEFAULT 0,
+  completed boolean NOT NULL DEFAULT false,
+  score integer,
+  profile text,
+  started_at timestamp DEFAULT now() NOT NULL,
+  updated_at timestamp DEFAULT now() NOT NULL,
+  completed_at timestamp
+);
+```
+
+> Alternativa (se tiver o repo + Node local): `DATABASE_URL="<string>" pnpm db:push`.
 
 ---
 
