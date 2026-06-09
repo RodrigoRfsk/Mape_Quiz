@@ -37,7 +37,7 @@ export default function QuizHero({ onStart }: QuizHeroProps) {
         />
       </div>
 
-      <div className="relative diagonal-cut bg-gradient-to-br from-card via-background to-card/50 py-20 md:py-32 w-full">
+      <div className="relative diagonal-cut bg-gradient-to-br from-card via-background to-card/50 py-12 sm:py-20 md:py-32 w-full">
         <div className="container">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -49,7 +49,7 @@ export default function QuizHero({ onStart }: QuizHeroProps) {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.1, duration: 0.4 }}
-              className="inline-flex items-center gap-2 mb-8 px-4 py-2 bg-primary/10 border border-primary/30 rounded-full"
+              className="inline-flex items-center gap-2 mb-6 sm:mb-8 px-4 py-2 bg-primary/10 border border-primary/30 rounded-full"
             >
               <Sparkles className="w-4 h-4 text-primary" />
               <span className="text-sm font-semibold text-primary">
@@ -61,7 +61,7 @@ export default function QuizHero({ onStart }: QuizHeroProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.6 }}
-              className="neo-display text-4xl md:text-5xl lg:text-6xl font-black mb-8 leading-tight tracking-tight"
+              className="neo-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-6 sm:mb-8 leading-tight tracking-tight"
             >
               <span className="block">Nossa IA analisa seu perfil</span>
               <span className="block">e revela se você está preparado</span>
@@ -78,7 +78,7 @@ export default function QuizHero({ onStart }: QuizHeroProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.6 }}
-              className="text-lg md:text-xl text-muted-foreground mb-10 max-w-3xl leading-relaxed text-balance"
+              className="text-base sm:text-lg md:text-xl text-muted-foreground mb-8 sm:mb-10 max-w-3xl leading-relaxed text-balance"
             >
               Um teste rápido para revelar seu estágio atual como futuro
               consultor. Identifique oportunidades, lacunas e próximos passos
@@ -89,7 +89,7 @@ export default function QuizHero({ onStart }: QuizHeroProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.6 }}
-              className="flex flex-col sm:flex-row justify-center gap-6 text-sm text-muted-foreground mb-10"
+              className="flex flex-col sm:flex-row sm:flex-wrap justify-center gap-3 sm:gap-6 text-sm text-muted-foreground mb-8 sm:mb-10"
             >
               <div className="flex items-center justify-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-primary" />
@@ -113,7 +113,7 @@ export default function QuizHero({ onStart }: QuizHeroProps) {
               <Button
                 onClick={onStart}
                 size="lg"
-                className="w-full sm:w-auto px-16 py-6 md:px-24 md:py-7 text-xl md:text-2xl bg-primary text-primary-foreground hover:bg-primary/90 border-2 border-primary font-bold flex items-center justify-center gap-3 group shadow-xl hover:shadow-primary/25 transition-all duration-300 hover:-translate-y-1"
+                className="w-full sm:w-auto px-8 py-5 text-lg sm:px-16 sm:py-6 sm:text-xl md:px-24 md:py-7 md:text-2xl bg-primary text-primary-foreground hover:bg-primary/90 border-2 border-primary font-bold flex items-center justify-center gap-3 group shadow-xl hover:shadow-primary/25 transition-all duration-300 hover:-translate-y-1"
               >
                 Análise meu perfil
                 <ArrowRight className="w-6 h-6 md:w-7 md:h-7 group-hover:translate-x-2 transition-transform" />

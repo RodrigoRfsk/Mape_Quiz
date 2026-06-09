@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -37,6 +37,7 @@ export default function Home() {
   const nextQuestion = useQuizStore(state => state.nextQuestion);
   const previousQuestion = useQuizStore(state => state.previousQuestion);
   const finishQuiz = useQuizStore(state => state.finishQuiz);
+  const resetQuiz = useQuizStore(state => state.resetQuiz);
 
   const [stepError, setStepError] = useState<string | null>(null);
   const [hasStarted, setHasStarted] = useState<boolean>(false);
@@ -51,6 +52,18 @@ export default function Home() {
   const handleAnswer = (value: string | string[]) => {
     setAnswer(currentQuestion.id, value);
     if (stepError) setStepError(null);
+  };
+
+  const handleStart = () => {
+    resetQuiz();
+    setStepError(null);
+    setHasStarted(true);
+  };
+
+  const handleRestart = () => {
+    resetQuiz();
+    setStepError(null);
+    setHasStarted(false);
   };
 
   const triggerAiAnalysis = () => {
@@ -119,6 +132,31 @@ export default function Home() {
         ? answers[currentQuestion.id].length > 0
         : true));
 
+  useEffect(() => {
+    const handleEnterKey = (event: KeyboardEvent) => {
+      if (event.key !== "Enter" || event.shiftKey) return;
+      if (!hasStarted || isFinished || isAnalyzing || isSubmitting) return;
+      if (!isAnswered) return;
+
+      const tag = (event.target as HTMLElement | null)?.tagName;
+      if (tag === "TEXTAREA" || tag === "BUTTON" || tag === "A") return;
+
+      event.preventDefault();
+      void handleNext();
+    };
+
+    window.addEventListener("keydown", handleEnterKey);
+    return () => window.removeEventListener("keydown", handleEnterKey);
+  }, [
+    hasStarted,
+    isFinished,
+    isAnalyzing,
+    isSubmitting,
+    isAnswered,
+    currentQuestionIndex,
+    answers,
+  ]);
+
   const getErrorMessage = (errorKey: string) => {
     switch (errorKey) {
       case "EmailAlreadyExists":
@@ -140,6 +178,7 @@ export default function Home() {
         score={score}
         profile={profile}
         category={categoryDisplay}
+        onRestart={handleRestart}
       />
     );
   }
@@ -155,7 +194,7 @@ export default function Home() {
             exit={{ opacity: 0, y: -50, transition: { duration: 0.4 } }}
             className="flex-1 flex flex-col"
           >
-            <QuizHero onStart={() => setHasStarted(true)} />
+            <QuizHero onStart={handleStart} />
           </motion.div>
         ) : (
           <motion.div
@@ -165,7 +204,7 @@ export default function Home() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="relative flex-1"
           >
-            <div className="relative container py-12 md:py-20">
+            <div className="relative container max-w-3xl py-12 md:py-20">
               <motion.div
                 className="mb-12"
                 initial={{ opacity: 0 }}
@@ -222,12 +261,13 @@ export default function Home() {
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <Card className="border-2 border-border bg-card p-8 md:p-12 neo-card shadow-lg">
-                      <div className="max-w-2xl">
+                    <Card className="border-2 border-border bg-card p-6 sm:p-8 md:p-12 neo-card shadow-lg">
+                      <div className="max-w-2xl mx-auto">
                         <motion.div
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           transition={{ delay: 0.1 }}
+                          className="text-center"
                         >
                           <h2 className="neo-display text-3xl md:text-4xl mb-2 text-foreground">
                             {currentQuestion.question}
