@@ -85,19 +85,13 @@ export default function AiAnalysis({
             cy="60"
             r={RADIUS}
             fill="none"
-            stroke="url(#aiGradient)"
+            stroke="#ffd700"
             strokeWidth="6"
             strokeLinecap="round"
             strokeDasharray={CIRCUMFERENCE}
             strokeDashoffset={CIRCUMFERENCE * (1 - progress / 100)}
             style={{ transition: "stroke-dashoffset 0.1s linear" }}
           />
-          <defs>
-            <linearGradient id="aiGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#ffd700" />
-              <stop offset="100%" stopColor="#ff6b35" />
-            </linearGradient>
-          </defs>
         </svg>
 
         <div className="absolute flex flex-col items-center">
