@@ -10,15 +10,6 @@ export default function QuizHero({ onStart }: QuizHeroProps) {
   return (
     <div className="relative min-h-screen overflow-hidden bg-background flex flex-col justify-center">
       <div className="absolute inset-0">
-        <div
-          className="absolute inset-0 opacity-20"
-          style={{
-            backgroundImage:
-              "url(https://d2xsxph8kpxj0f.cloudfront.net/310419663029531747/m3Sqewg9SCnfy74MFqsopm/mape-hero-abstract-ZtxYmZ3XAGb44SvE3ZbLJm.webp)",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        />
         <motion.div
           className="absolute top-0 left-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl"
           animate={{
@@ -28,7 +19,7 @@ export default function QuizHero({ onStart }: QuizHeroProps) {
           transition={{ duration: 8, repeat: Infinity }}
         />
         <motion.div
-          className="absolute bottom-0 right-0 w-96 h-96 bg-secondary/10 rounded-full blur-3xl"
+          className="absolute bottom-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl"
           animate={{
             x: [0, -50, 0],
             y: [0, -30, 0],
@@ -37,7 +28,7 @@ export default function QuizHero({ onStart }: QuizHeroProps) {
         />
       </div>
 
-      <div className="relative diagonal-cut bg-gradient-to-br from-card via-background to-card/50 py-12 sm:py-20 md:py-32 w-full">
+      <div className="relative diagonal-cut bg-background py-12 sm:py-20 md:py-32 w-full">
         <div className="container">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
