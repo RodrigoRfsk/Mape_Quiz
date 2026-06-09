@@ -33,7 +33,6 @@ export default function Home() {
   const nextQuestion = useQuizStore(state => state.nextQuestion);
   const previousQuestion = useQuizStore(state => state.previousQuestion);
   const finishQuiz = useQuizStore(state => state.finishQuiz);
-  const resetQuiz = useQuizStore(state => state.resetQuiz);
   const beginQuiz = useQuizStore(state => state.beginQuiz);
   const applyRemoteProgress = useQuizStore(state => state.applyRemoteProgress);
 
@@ -59,12 +58,6 @@ export default function Home() {
     beginQuiz();
     setStepError(null);
     setHasStarted(true);
-  };
-
-  const handleRestart = () => {
-    resetQuiz();
-    setStepError(null);
-    setHasStarted(false);
   };
 
   useEffect(() => {
@@ -182,7 +175,6 @@ export default function Home() {
         answers={answers}
         profile={profile}
         category={categoryDisplay}
-        onRestart={handleRestart}
       />
     );
   }
