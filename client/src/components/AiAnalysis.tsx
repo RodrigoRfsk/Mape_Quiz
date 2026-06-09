@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { BrainCircuit, Check } from "lucide-react";
+import { Bot, Check } from "lucide-react";
 
 const STEPS = [
   "Lendo suas respostas",
@@ -105,7 +105,7 @@ export default function AiAnalysis({
             animate={{ scale: [1, 1.12, 1] }}
             transition={{ duration: 1.6, repeat: Infinity }}
           >
-            <BrainCircuit className="h-7 w-7 text-primary" />
+            <Bot className="h-8 w-8 text-primary" />
           </motion.div>
           <span className="neo-display text-3xl text-foreground">
             {progress}%
