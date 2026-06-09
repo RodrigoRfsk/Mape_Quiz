@@ -52,24 +52,22 @@ export default function QuizHero({ onStart }: QuizHeroProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.6 }}
-              className="neo-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-6 sm:mb-8 leading-tight tracking-tight"
+              className="neo-display text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-black mb-5 sm:mb-8 leading-snug sm:leading-tight tracking-tight"
             >
               <span className="block">Nossa IA analisa seu perfil</span>
               <span className="block">e revela se você está preparado</span>
-              <span>para transformar sua experiência</span>
+              <span className="block">para transformar sua experiência</span>
               <span className="block mt-2 text-primary">
                 em uma consultoria valorizada
               </span>
-              <span className="block mt-2 text-primary">
-                pelo mercado.
-              </span>
+              <span className="block mt-2 text-primary">pelo mercado.</span>
             </motion.h1>
 
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.6 }}
-              className="text-base sm:text-lg md:text-xl text-muted-foreground mb-8 sm:mb-10 max-w-3xl leading-relaxed text-balance"
+              className="text-sm sm:text-base md:text-xl text-muted-foreground mb-6 sm:mb-10 max-w-3xl leading-relaxed text-balance"
             >
               Um teste rápido para revelar seu estágio atual como futuro
               consultor. Identifique oportunidades, lacunas e próximos passos
