@@ -63,9 +63,14 @@ export default function Home() {
     setAnswer(currentQuestion.id, value);
     if (stepError) setStepError(null);
 
-    if (currentQuestion.type === "radio") {
+    const reachedCheckboxMax =
+      currentQuestion.type === "checkbox" &&
+      Array.isArray(value) &&
+      value.length >= 2;
+
+    if (currentQuestion.type === "radio" || reachedCheckboxMax) {
       if (advanceTimer.current) clearTimeout(advanceTimer.current);
-      advanceTimer.current = setTimeout(goToNextStep, 350);
+      advanceTimer.current = setTimeout(goToNextStep, 150);
     }
   };
 
