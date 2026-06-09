@@ -1,0 +1,3 @@
+quiz.fontanela.com.br {
+	reverse_proxy app:3001
+}

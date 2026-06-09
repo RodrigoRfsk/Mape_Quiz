@@ -1,0 +1,68 @@
+services:
+  app:
+    build: .
+    container_name: mape_quiz_app
+    restart: unless-stopped
+    env_file:
+      - ./server/.env
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+    depends_on:
+      db:
+        condition: service_healthy
+    expose:
+      - "3001"
+
+  db:
+    image: postgres:16-alpine
+    container_name: mape_quiz_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: mape_quiz_n8n
+    restart: unless-stopped
+    environment:
+      GENERIC_TIMEZONE: America/Sao_Paulo
+      WEBHOOK_URL: http://localhost:5678/
+      N8N_SECURE_COOKIE: "false"
+    ports:
+      - "127.0.0.1:5678:5678"
+    volumes:
+      - n8ndata:/home/node/.n8n
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: mape_quiz_caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+
+volumes:
+  pgdata:
+    name: mape_quiz_pgdata
+  n8ndata:
+    name: mape_quiz_n8ndata
+  caddy_data:
+    name: mape_quiz_caddy_data
+  caddy_config:
+    name: mape_quiz_caddy_config
