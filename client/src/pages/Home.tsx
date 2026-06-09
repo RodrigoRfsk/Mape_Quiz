@@ -180,7 +180,6 @@ export default function Home() {
     return (
       <QuizResults
         answers={answers}
-        score={score}
         profile={profile}
         category={categoryDisplay}
         onRestart={handleRestart}

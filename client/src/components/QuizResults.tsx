@@ -21,7 +21,6 @@ import {
 
 interface QuizResultsProps {
   answers: QuizAnswers;
-  score: number;
   profile: ProfileCode;
   category: {
     label: string;
@@ -34,7 +33,6 @@ interface QuizResultsProps {
 
 export default function QuizResults({
   answers,
-  score,
   profile,
   category,
   onRestart,
@@ -116,16 +114,12 @@ export default function QuizResults({
                 {getCategoryIcon()}
               </motion.div>
 
-              <h2 className="neo-display text-5xl md:text-6xl mb-4 text-primary">
-                {score}
-                <span className="text-3xl text-muted-foreground ml-1">
-                  /100
-                </span>
-              </h2>
-
-              <p className="text-muted-foreground mb-2">
-                Score de Consultoria de {firstName}
+              <p className="text-sm uppercase tracking-wide text-muted-foreground mb-2">
+                Seu diagnóstico
               </p>
+              <h2 className="neo-display text-3xl md:text-4xl text-foreground">
+                {firstName}, este é o seu perfil
+              </h2>
             </div>
           </motion.div>
 
