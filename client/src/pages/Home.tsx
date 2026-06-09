@@ -226,7 +226,7 @@ export default function Home() {
                 </div>
                 <div className="h-2 bg-card rounded-full overflow-hidden border border-border">
                   <motion.div
-                    className="h-full bg-gradient-to-r from-primary via-secondary to-accent"
+                    className="h-full bg-primary"
                     initial={{ width: 0 }}
                     animate={{ width: `${progress}%` }}
                     transition={{ duration: 0.5, ease: "easeOut" }}

@@ -66,10 +66,10 @@ export default function QuizHero({ onStart }: QuizHeroProps) {
               <span className="block">Nossa IA analisa seu perfil</span>
               <span className="block">e revela se você está preparado</span>
               <span>para transformar sua experiência</span>
-              <span className="block mt-2 bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
+              <span className="block mt-2 text-primary">
                 em uma consultoria valorizada
               </span>
-              <span className="block mt-2 bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
+              <span className="block mt-2 text-primary">
                 pelo mercado.
               </span>
             </motion.h1>
