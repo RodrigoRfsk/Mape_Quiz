@@ -14,10 +14,7 @@ import { CheckCircle2, Award, Zap, TrendingUp, CalendarCheck } from "lucide-reac
 import { toast } from "sonner";
 import { useExitIntent } from "@/hooks/useExitIntent";
 import { QuizAnswers, ProfileCode } from "@/domain/quiz/types";
-import {
-  getRecommendationsForProfile,
-  getAnswerLabel,
-} from "@/domain/quiz/data";
+import { getAnswerLabel } from "@/domain/quiz/data";
 
 interface QuizResultsProps {
   answers: QuizAnswers;
@@ -92,8 +89,6 @@ export default function QuizResults({
         return <CheckCircle2 className="w-16 h-16" />;
     }
   };
-
-  const recommendations = getRecommendationsForProfile(profile);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -203,31 +198,29 @@ export default function QuizResults({
                   {getAnswerLabel("clients", answers.clients)}
                 </p>
               </Card>
-            </div>
-          </motion.div>
 
-          <motion.div variants={itemVariants} className="mb-8">
-            <h4 className="neo-heading text-2xl mb-4">
-              Próximos Passos Recomendados
-            </h4>
+              <Card className="border-2 border-border bg-card/50 p-4 neo-card">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-2 h-2 rounded-full bg-secondary" />
+                  <span className="font-semibold">Resultado Esperado</span>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  {getAnswerLabel(
+                    "expected-result",
+                    answers["expected-result"]
+                  )}
+                </p>
+              </Card>
 
-            <div className="space-y-3">
-              {recommendations.map((rec, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.4 + index * 0.1 }}
-                  className="flex items-start gap-3 p-4 border-2 border-border rounded-lg bg-card/50 neo-card"
-                >
-                  <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center flex-shrink-0 text-sm font-bold">
-                    {index + 1}
-                  </div>
-                  <p className="text-base leading-relaxed">
-                    {personalizeText(rec)}
-                  </p>
-                </motion.div>
-              ))}
+              <Card className="border-2 border-border bg-card/50 p-4 neo-card">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-2 h-2 rounded-full bg-accent" />
+                  <span className="font-semibold">Horizonte de Tempo</span>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  {getAnswerLabel("timeline", answers.timeline)}
+                </p>
+              </Card>
             </div>
           </motion.div>
 
