@@ -120,9 +120,6 @@ export const useQuizStore = create<QuizState>()(
       partialize: state => ({
         answers: state.answers,
         currentQuestionIndex: state.currentQuestionIndex,
-        isFinished: state.isFinished,
-        score: state.score,
-        profile: state.profile,
       }),
     }
   )

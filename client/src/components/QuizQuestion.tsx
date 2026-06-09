@@ -4,6 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import PhoneInput from "@/components/PhoneInput";
 import { Question } from "@/domain/quiz/data";
 
 interface QuizQuestionProps {
@@ -64,6 +65,22 @@ export default function QuizQuestion({
           value={(answer as string) || ""}
           onChange={e => onAnswer(e.target.value)}
           className="text-base py-4 px-4 border-2 border-border bg-transparent text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary min-h-32 rounded-lg transition-all"
+        />
+      </motion.div>
+    );
+  }
+
+  if (question.type === "phone") {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <PhoneInput
+          value={(answer as string) || ""}
+          onAnswer={onAnswer}
+          placeholder={question.placeholder}
         />
       </motion.div>
     );
