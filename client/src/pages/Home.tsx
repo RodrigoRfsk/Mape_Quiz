@@ -13,6 +13,7 @@ import {
   SCORING_RULES,
   getCategoryDisplayData,
 } from "@/domain/quiz/data";
+import { determineProfile } from "@/domain/quiz/scoring.service";
 import { quizSubmissionSchema } from "@shared/quiz/schema";
 import { useQuizStore } from "@/app/store/quiz.store";
 import { loadQuizProgress } from "@/infrastructure/api/quiz-session.service";
@@ -23,11 +24,9 @@ export default function Home() {
     state => state.currentQuestionIndex
   );
   const answers = useQuizStore(state => state.answers);
-  const isFinished = useQuizStore(state => state.isFinished);
+  const status = useQuizStore(state => state.status);
   const isSubmitting = useQuizStore(state => state.isSubmitting);
   const submitError = useQuizStore(state => state.submitError);
-  const score = useQuizStore(state => state.score);
-  const profile = useQuizStore(state => state.profile);
 
   const setAnswer = useQuizStore(state => state.setAnswer);
   const nextQuestion = useQuizStore(state => state.nextQuestion);
@@ -37,12 +36,6 @@ export default function Home() {
   const applyRemoteProgress = useQuizStore(state => state.applyRemoteProgress);
 
   const [stepError, setStepError] = useState<string | null>(null);
-  const [hasStarted, setHasStarted] = useState<boolean>(() => {
-    const state = useQuizStore.getState();
-    return (
-      state.status === "in_progress" && Object.keys(state.answers).length > 0
-    );
-  });
 
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
 
@@ -57,7 +50,6 @@ export default function Home() {
   const handleStart = () => {
     beginQuiz();
     setStepError(null);
-    setHasStarted(true);
   };
 
   useEffect(() => {
@@ -77,7 +69,6 @@ export default function Home() {
         Object.keys(remote.answers).length > 0
       ) {
         applyRemoteProgress(remote.answers, remote.currentQuestionIndex);
-        setHasStarted(true);
       }
     });
   }, [applyRemoteProgress]);
@@ -133,7 +124,7 @@ export default function Home() {
   useEffect(() => {
     const handleEnterKey = (event: KeyboardEvent) => {
       if (event.key !== "Enter" || event.shiftKey) return;
-      if (!hasStarted || isFinished || isAnalyzing || isSubmitting) return;
+      if (status !== "in_progress" || isAnalyzing || isSubmitting) return;
       if (!isAnswered) return;
 
       const tag = (event.target as HTMLElement | null)?.tagName;
@@ -146,8 +137,7 @@ export default function Home() {
     window.addEventListener("keydown", handleEnterKey);
     return () => window.removeEventListener("keydown", handleEnterKey);
   }, [
-    hasStarted,
-    isFinished,
+    status,
     isAnalyzing,
     isSubmitting,
     isAnswered,
@@ -168,12 +158,13 @@ export default function Home() {
     }
   };
 
-  if (isFinished && score !== null && profile !== null) {
-    const categoryDisplay = getCategoryDisplayData(profile);
+  if (status === "completed") {
+    const resolvedProfile = determineProfile(answers);
+    const categoryDisplay = getCategoryDisplayData(resolvedProfile);
     return (
       <QuizResults
         answers={answers}
-        profile={profile}
+        profile={resolvedProfile}
         category={categoryDisplay}
       />
     );
@@ -182,7 +173,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col overflow-hidden">
       <AnimatePresence mode="wait">
-        {!hasStarted ? (
+        {status === "idle" ? (
           <motion.div
             key="hero-view"
             initial={{ opacity: 0 }}
