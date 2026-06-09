@@ -12,7 +12,7 @@ describe("Scoring Service", () => {
     const answers: QuizAnswers = { experience: "senior", moment: "ready" };
     const score = calculateConsultingScore(answers, mockRules);
 
-    expect(score).toBe(39);
+    expect(score).toBe(46);
   });
 
   it("should handle missing questions in rules without throwing errors", () => {

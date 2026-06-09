@@ -159,16 +159,6 @@ export default function QuizResults({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Card className="border-2 border-border bg-card/50 p-4 neo-card">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="w-2 h-2 rounded-full bg-primary" />
-                  <span className="font-semibold">Experiência</span>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  {getAnswerLabel("experience", answers.experience)}
-                </p>
-              </Card>
-
-              <Card className="border-2 border-border bg-card/50 p-4 neo-card">
-                <div className="flex items-center gap-3 mb-2">
                   <div className="w-2 h-2 rounded-full bg-secondary" />
                   <span className="font-semibold">Momento Atual</span>
                 </div>
@@ -194,19 +184,6 @@ export default function QuizResults({
                 </div>
                 <p className="text-sm text-muted-foreground">
                   {getAnswerLabel("clients", answers.clients)}
-                </p>
-              </Card>
-
-              <Card className="border-2 border-border bg-card/50 p-4 neo-card">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-2 h-2 rounded-full bg-secondary" />
-                  <span className="font-semibold">Resultado Esperado</span>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  {getAnswerLabel(
-                    "expected-result",
-                    answers["expected-result"]
-                  )}
                 </p>
               </Card>
 
