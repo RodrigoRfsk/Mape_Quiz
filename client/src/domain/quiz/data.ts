@@ -10,7 +10,7 @@ export interface QuestionOption {
 export interface Question {
   id: string;
   block: number;
-  type: "text" | "textarea" | "radio" | "checkbox";
+  type: "text" | "textarea" | "radio" | "checkbox" | "phone";
   question: string;
   placeholder?: string;
   options?: QuestionOption[];
@@ -146,9 +146,9 @@ export const QUIZ_QUESTIONS: Question[] = [
   {
     id: "phone",
     block: 1,
-    type: "text",
+    type: "phone",
     question: "Qual é o seu telefone com DDD?",
-    placeholder: "(00) 00000-0000",
+    placeholder: "(11) 99999-9999",
   },
   {
     id: "clients",
