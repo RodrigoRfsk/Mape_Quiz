@@ -1,0 +1,23 @@
+FROM node:22-slim AS build
+WORKDIR /app
+RUN corepack enable
+COPY package.json pnpm-lock.yaml ./
+COPY patches ./patches
+RUN pnpm install --frozen-lockfile
+COPY . .
+ENV VITE_API_URL=/api/leads
+RUN pnpm build
+
+FROM node:22-slim AS runtime
+WORKDIR /app
+RUN corepack enable
+ENV NODE_ENV=production
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/server ./server
+COPY --from=build /app/shared ./shared
+COPY --from=build /app/package.json ./package.json
+COPY --from=build /app/pnpm-lock.yaml ./pnpm-lock.yaml
+COPY --from=build /app/tsconfig.json ./tsconfig.json
+EXPOSE 3001
+CMD ["pnpm", "start"]

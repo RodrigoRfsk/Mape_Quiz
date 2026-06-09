@@ -6,6 +6,7 @@
   "scripts": {
     "dev:client": "vite --host",
     "dev:server": "tsx watch server/index.ts",
+    "start": "NODE_ENV=production tsx server/index.ts",
     "build": "vite build",
     "db:push": "drizzle-kit push --config=server/drizzle.config.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json",
