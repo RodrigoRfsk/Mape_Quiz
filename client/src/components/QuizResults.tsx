@@ -1,8 +1,18 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { CheckCircle2, Award, Zap, TrendingUp } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { CheckCircle2, Award, Zap, TrendingUp, CalendarCheck } from "lucide-react";
 import { toast } from "sonner";
+import { useExitIntent } from "@/hooks/useExitIntent";
 import { QuizAnswers, ProfileCode } from "@/domain/quiz/types";
 import {
   getRecommendationsForProfile,
@@ -58,9 +68,19 @@ export default function QuizResults({
     visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
   };
 
-  const handleNextSteps = () => {
+  const [reserved, setReserved] = useState<boolean>(false);
+  const [showExitModal, setShowExitModal] = useState<boolean>(false);
+
+  const handleReserve = () => {
+    setReserved(true);
+    setShowExitModal(false);
     toast.success("Redirecionando para os próximos passos...");
   };
+
+  useExitIntent({
+    enabled: !reserved,
+    onExitIntent: () => setShowExitModal(true),
+  });
 
   const getCategoryIcon = () => {
     switch (profile) {
@@ -249,7 +269,7 @@ export default function QuizResults({
             </p>
 
             <Button
-              onClick={handleNextSteps}
+              onClick={handleReserve}
               size="lg"
               className="bg-primary text-primary-foreground hover:bg-primary/90 border-2 border-primary font-bold px-10 py-6 text-lg w-full sm:w-auto"
             >
@@ -268,6 +288,42 @@ export default function QuizResults({
           </motion.div>
         </motion.div>
       </div>
+
+      <Dialog open={showExitModal} onOpenChange={setShowExitModal}>
+        <DialogContent className="border-2 border-primary bg-card sm:max-w-md">
+          <DialogHeader>
+            <div className="mx-auto mb-2 inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary/15 text-primary">
+              <CalendarCheck className="h-6 w-6" />
+            </div>
+            <DialogTitle className="text-center text-xl">
+              {firstName}, não saia sem garantir sua vaga
+            </DialogTitle>
+            <DialogDescription className="text-center text-base leading-relaxed">
+              Seu diagnóstico está pronto, mas o próximo passo é o que muda o
+              jogo: o encontro estratégico do dia{" "}
+              <span className="font-bold text-primary">02 de julho</span> tem
+              vagas limitadas e gratuitas. Garanta a sua antes de fechar.
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter className="flex-col gap-2 sm:flex-col">
+            <Button
+              onClick={handleReserve}
+              size="lg"
+              className="w-full bg-primary text-primary-foreground hover:bg-primary/90 border-2 border-primary font-bold py-6 text-lg"
+            >
+              Quero garantir minha vaga
+            </Button>
+            <Button
+              onClick={() => setShowExitModal(false)}
+              variant="ghost"
+              className="w-full text-muted-foreground hover:text-foreground"
+            >
+              Agora não
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
