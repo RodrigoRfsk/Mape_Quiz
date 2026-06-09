@@ -7,6 +7,11 @@ vi.mock("@/infrastructure/api/quiz.service", () => ({
   ApiSubmissionError: class ApiSubmissionError extends Error {},
 }));
 
+vi.mock("@/infrastructure/api/quiz-session.service", () => ({
+  saveQuizProgress: vi.fn().mockResolvedValue(undefined),
+  loadQuizProgress: vi.fn().mockResolvedValue(null),
+}));
+
 describe("Quiz Store", () => {
   beforeEach(() => {
     useQuizStore.getState().resetQuiz();
